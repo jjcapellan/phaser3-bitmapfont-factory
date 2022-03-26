@@ -2,6 +2,7 @@
 
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 import { rtSnapshot } from './snapshot';
+import { BmfConfig } from './types';
 
 let BMFMaker = {
     loadText: async (
@@ -121,26 +122,5 @@ const makeBMFXml = (bmfConfig: BmfConfig): Document => {
 
     return xml;
 }
-
-type FontData = {
-    font?: string,
-    size?: number,
-    lineHeight?: number,
-    chars?: Phaser.Types.GameObjects.BitmapText.BitmapFontCharacterData[] | {}
-}
-
-
-type BmfConfig = {
-    scene: Phaser.Scene,
-    charset: string,
-    fontName: string,
-    textStyle: Phaser.Types.GameObjects.Text.TextStyle,
-    frame?: Phaser.Textures.Frame,
-    texture?: Phaser.Textures.Texture,
-    xml?: Document,
-    fontData?: FontData
-}
-
-
 
 export { BMFMaker }
