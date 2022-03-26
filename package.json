@@ -23,6 +23,7 @@
   "author": "Juan Jose Capellan",
   "license": "MIT",
   "devDependencies": {
-    "microbundle": "^0.14.2"
+    "microbundle": "^0.14.2",
+    "phaser": "^3.55.2"
   }
 }

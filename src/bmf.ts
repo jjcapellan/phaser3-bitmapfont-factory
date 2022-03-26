@@ -1,5 +1,8 @@
 /// <reference path="../types/phaser.d.ts" />
 
+import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
+import { rtSnapshot } from './snapshot';
+
 let BMFMaker = {
     loadText: async (
         scene: Phaser.Scene,
@@ -26,7 +29,7 @@ let BMFMaker = {
 
         c.xml = makeBMFXml(c);
 
-        c.fontData = ParseXMLBitmapFont(c.xml, c.frame, c.texture);
+        c.fontData = ParseXMLBitmapFont(c.xml, c.frame, 0, 0, c.texture);
 
         scene.cache.bitmapFont.add(fontName, { data: c.fontData, texture: fontName, frame: null });
 
@@ -56,7 +59,7 @@ const makeBMFTexture = async (bmfConfig: BmfConfig): Promise<Phaser.Textures.Tex
     const rt: Phaser.GameObjects.RenderTexture = c.scene.make.renderTexture({ x: 0, y: 0, width: rtWidth, height: rtHeight, }, false);//c.scene.add.renderTexture(0, 0, rtWidth, rtHeight);
 
     rt.setOrigin(0);
-    
+
 
     let xPos = 0;
     for (let i = 0; i < charsTxt.length; i++) {
@@ -65,15 +68,16 @@ const makeBMFTexture = async (bmfConfig: BmfConfig): Promise<Phaser.Textures.Tex
     }
 
     // Converts renderTexture to Phaser.texture
-    // (Using a renderTexture in next steps produces an inverted text) 
+    // (Using a renderTexture.saveTexture() in next steps produces an inverted text) 
     function rtToTexture(): Promise<Phaser.Textures.Texture> {
         return new Promise(resolve => {
-            rt.snapshot((img: any) => {
-                c.scene.textures.addImage(c.fontName, img);
-                let texture = c.scene.textures.get(c.fontName);
-                rt.destroy();
-                resolve(texture);
-            });
+            rtSnapshot(rt, c.scene.renderer,
+                (img: any) => {
+                    c.scene.textures.addImage(c.fontName, img);
+                    let texture = c.scene.textures.get(c.fontName);
+                    rt.destroy();
+                    resolve(texture);
+                });
         })
     }
 
@@ -94,12 +98,9 @@ const makeBMFXml = (bmfConfig: BmfConfig): Document => {
 
     // fills xmlBody
     for (let i = 0; i < c.charset.length; i++) {
-        // Code ascii
         const id = c.charset[i].charCodeAt(0);
-        // Using make.text produces different bounds
         const char = c.scene.add.text(0, 0, c.charset[i], c.textStyle);
         const b = char.getBounds();
-
 
         // Chars are destroyed by the scene manager
         char.setVisible(false);
@@ -121,127 +122,6 @@ const makeBMFXml = (bmfConfig: BmfConfig): Document => {
     return xml;
 }
 
-
-function getValue(node, attribute) {
-    return parseInt(node.getAttribute(attribute), 10);
-}
-
-// This function is a reduced version from:
-// https://github.com/photonstorm/phaser/blob/v3.51.0/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js
-var ParseXMLBitmapFont = function (xml: Document, frame: Phaser.Textures.Frame, texture: Phaser.Textures.Texture) {
-
-    const xSpacing = 0;
-    const ySpacing = 0;
-
-    var textureX = frame.cutX;
-    var textureY = frame.cutY;
-    var textureWidth = frame.source.width;
-    var textureHeight = frame.source.height;
-    var sourceIndex = frame.sourceIndex;
-
-
-    var data: FontData = {};
-    var info = xml.getElementsByTagName('info')[0];
-    var common = xml.getElementsByTagName('common')[0];
-
-    data.font = info.getAttribute('face');
-    data.size = getValue(info, 'size');
-    data.lineHeight = getValue(common, 'lineHeight') + ySpacing;
-    data.chars = {};
-
-    var letters = xml.getElementsByTagName('char');
-
-    var adjustForTrim = (frame !== undefined && frame.trimmed);
-
-
-    if (adjustForTrim) {
-        var top = frame.height;
-        var left = frame.width;
-    }
-
-    let widths = [];
-
-    for (var i = 0; i < letters.length; i++) {
-        var node = letters[i];
-
-        var charCode = getValue(node, 'id');
-        var letter = String.fromCharCode(charCode);
-        var gx = getValue(node, 'x');
-        var gy = getValue(node, 'y');
-        var gw = getValue(node, 'width');
-        var gh = getValue(node, 'height');
-        widths.push(gw);
-
-        //  Handle frame trim issues
-
-        if (adjustForTrim) {
-            if (gx < left) {
-                left = gx;
-            }
-
-            if (gy < top) {
-                top = gy;
-            }
-        }
-
-        if (adjustForTrim && top !== 0 && left !== 0) {
-            //  Now we know the top and left coordinates of the glyphs in the original data
-            //  so we can work out how much to adjust the glyphs by
-
-            gx -= frame.x;
-            gy -= frame.y;
-        }
-
-        var u0 = (textureX + gx) / textureWidth;
-        var v0 = (textureY + gy) / textureHeight;
-        var u1 = (textureX + gx + gw) / textureWidth;
-        var v1 = (textureY + gy + gh) / textureHeight;
-
-
-        data.chars[charCode] =
-        {
-            x: gx,
-            y: gy,
-            width: gw,
-            height: gh,
-            centerX: Math.floor(gw / 2),
-            centerY: Math.floor(gh / 2),
-            xOffset: getValue(node, 'xoffset'),
-            yOffset: getValue(node, 'yoffset'),
-            xAdvance: getValue(node, 'xadvance') + xSpacing,
-            data: {},
-            kerning: {},
-            u0: u0,
-            v0: v0,
-            u1: u1,
-            v1: v1
-        };
-
-        if (texture && gw !== 0 && gh !== 0) {
-            var charFrame = texture.add(letter, sourceIndex, gx, gy, gw, gh);
-
-            if (charFrame) {
-                charFrame.setUVs(gw, gh, u0, v0, u1, v1);
-            }
-        }
-    }
-
-
-    var kernings = xml.getElementsByTagName('kerning');
-
-    for (i = 0; i < kernings.length; i++) {
-        var kern = kernings[i];
-
-        var first = getValue(kern, 'first');
-        var second = getValue(kern, 'second');
-        var amount = getValue(kern, 'amount');
-
-        data.chars[second].kerning[first] = amount;
-    }
-
-    return data;
-};
-
 type FontData = {
     font?: string,
     size?: number,
@@ -260,5 +140,7 @@ type BmfConfig = {
     xml?: Document,
     fontData?: FontData
 }
+
+
 
 export { BMFMaker }
