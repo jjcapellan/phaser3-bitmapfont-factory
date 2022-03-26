@@ -8,7 +8,7 @@
   "source": "src/bmf.ts",
   "types": "dist/bmf.d.ts",
   "scripts": {
-    "build:dev": "microbundle -f umd --name BMF -o devbuild",
+    "build:dev": "microbundle -f umd --name BMF -o devbuild --no-generateTypes",
     "build:dist": "microbundle -f cjs,umd,es --name BMF --sourcemap false",
     "dev": "microbundle watch -f umd --name BMF"
   },
