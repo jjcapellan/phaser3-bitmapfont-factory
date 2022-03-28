@@ -17,4 +17,16 @@ type BmfConfig = {
     fontData?: FontData
 }
 
-export { FontData, BmfConfig }
+type Task = {
+    chars: string,
+    fontFamily: string,
+    fontHeight: number,
+    fontWidths: number[],
+    glyps: Phaser.GameObjects.Text[],
+    key: string,
+    style: Phaser.Types.GameObjects.Text.TextStyle,
+    textureHeight: number,
+    textureWidth: number
+}
+
+export { FontData, BmfConfig, Task }

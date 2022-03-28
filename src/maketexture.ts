@@ -1,5 +1,50 @@
 /// <reference path="../types/phaser.d.ts" />
 
+import { Task } from "./types";
+
+async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Textures.Texture> {
+
+    const widths = task.fontWidths;
+    const rtHeight = task.textureHeight;
+    const rtWidth = task.textureWidth;
+    const fontHeight = task.fontHeight;
+    const glyps = task.glyps;
+    const key = task.key;
+
+    const rt = scene.make.renderTexture({ x: 0, y: 0, width: rtWidth, height: rtHeight, }, false);
+    rt.setOrigin(0);
+
+
+    let xPos = 0;
+    let yPos = 0;
+    for (let i = 0; i < glyps.length; i++) {
+        rt.draw(glyps[i], xPos, yPos);
+        xPos += widths[i];
+        if (xPos > rtWidth) {
+            xPos = 0;
+            yPos += fontHeight;
+        }
+    }
+
+    // Converts renderTexture to Phaser.texture
+    // (Using a renderTexture.saveTexture() in next steps produces an inverted text) 
+    function rtToTexture(): Promise<Phaser.Textures.Texture> {
+        return new Promise(resolve => {
+            rtSnapshot(rt, scene.renderer,
+                (img: any) => {
+                    scene.textures.addImage(key, img);
+                    let texture = scene.textures.get(key);
+                    rt.destroy();
+                    resolve(texture);
+                });
+        })
+    }
+
+    return rtToTexture();
+}
+
+
+
 // Phaser limits the size of snapshot to canvas size, so this workaround is necessary
 
 function rtSnapshot(
@@ -47,4 +92,4 @@ function rtSnapshotWebgl(
     return renderer;
 }
 
-export { rtSnapshot }
+export { makeTexture }

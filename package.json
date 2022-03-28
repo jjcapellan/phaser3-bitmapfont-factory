@@ -2,15 +2,15 @@
   "name": "phaser3-text-to-bitmapfont",
   "version": "1.0.0",
   "description": "Loads any font as bitmapFont in Phaser3",
-  "main": "dist/bmf.js",
-  "umd:main": "dist/bmf.umd.js",
-  "module": "dist/bmf.ems.js",
-  "source": "src/bmf.ts",
-  "types": "dist/bmf.d.ts",
+  "main": "dist/bmff.js",
+  "umd:main": "dist/bmff.umd.js",
+  "module": "dist/bmff.ems.js",
+  "source": "src/bmff.ts",
+  "types": "dist/bmff.d.ts",
   "scripts": {
-    "build:dev": "microbundle -f umd --name BMF -o devbuild --no-generateTypes",
-    "build:dist": "microbundle -f cjs,umd,es --name BMF --sourcemap false",
-    "dev": "microbundle watch -f umd --name BMF"
+    "build:dev": "microbundle -f umd --name BMFFactory -o devbuild --no-generateTypes",
+    "build:dist": "microbundle -f cjs,umd,es --name BMFFactory --sourcemap false",
+    "dev": "microbundle watch -f umd --name BMFFactory"
   },
   "keywords": [
     "Phaser3",
