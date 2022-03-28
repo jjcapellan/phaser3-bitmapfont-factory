@@ -66,6 +66,8 @@ export default class BMFFactory {
             textureWidth: 0
         }
 
+        task.style.fontFamily = task.fontFamily;
+
 
         this.tasks.push(task);
     }// End make()
