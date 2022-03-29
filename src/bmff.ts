@@ -36,19 +36,23 @@ export default class BMFFactory {
             return;
         }
 
-
         // Make glyps
         this.#makeGlyps(task);
 
         // Set texture dimensions
         this.#setDimensions(task);
 
+        // Calc kernings
+        if (task.getKernings) {
+            this.#calcKernings(task);
+        }
+
         this.currentPendingSteps = 2;
         this.#makeTexture(task); // async
         this.#makeXML(task);
     }
 
-    make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}) {
+    make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
 
         if (style.fontSize == undefined) {
             style.fontSize = '32px';
@@ -60,6 +64,8 @@ export default class BMFFactory {
             fontHeight: 0,
             fontWidths: [],
             glyps: [],
+            getKernings: getKernings,
+            kernings: [],
             key: key,
             style: style,
             textureHeight: 0,
@@ -71,6 +77,25 @@ export default class BMFFactory {
 
         this.tasks.push(task);
     }// End make()
+
+    #calcKernings = (task: Task) => {
+        const kernings = task.kernings;
+        const chars = task.chars;
+        const widths = task.fontWidths;
+
+        for (let i = 0; i < chars.length; i++) {
+            for (let j = 0; j < chars.length; j++) {
+                let w1 = widths[i] + widths[j];
+                let pair = this.scene.make.text({ text: chars[i] + chars[j], style: task.style }, false);
+                let w2 = pair.width;
+                let offset = w2 - w1;
+                if (offset != 0) {
+                    kernings.push({ first: chars[i].charCodeAt(0), second: chars[j].charCodeAt(0), amount: offset });
+                }
+                pair.destroy();
+            }
+        }
+    }
 
 
     #ceilPowerOfTwo = (n: number): number => {
