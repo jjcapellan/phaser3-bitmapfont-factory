@@ -36,20 +36,22 @@ export default class BMFFactory {
             return;
         }
 
-        // Make glyps
-        this.#makeGlyps(task);
+        setTimeout(() => {
+            // Make glyps
+            this.#makeGlyps(task);
 
-        // Set texture dimensions
-        this.#setDimensions(task);
+            // Set texture dimensions
+            this.#setDimensions(task);
 
-        // Calc kernings
-        if (task.getKernings) {
-            this.#calcKernings(task);
-        }
+            // Calc kernings
+            if (task.getKernings) {
+                this.#calcKernings(task);
+            }
 
-        this.currentPendingSteps = 2;
-        this.#makeTexture(task); // async
-        this.#makeXML(task);
+            this.currentPendingSteps = 2;
+            this.#makeTexture(task); // async
+            this.#makeXML(task);
+        });
     }
 
     make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
