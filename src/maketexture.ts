@@ -1,5 +1,6 @@
 /// <reference path="../types/phaser.d.ts" />
 
+import CanvasSnapshot from "../node_modules/phaser/src/renderer/snapshot/CanvasSnapshot.js"
 import { Task } from "./types";
 
 async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Textures.Texture> {
@@ -56,6 +57,9 @@ function rtSnapshot(
     if (rt.renderTarget) {
         const r = renderer as Phaser.Renderer.WebGL.WebGLRenderer;
         rtSnapshotWebgl(rt, r, callback);
+    } else {
+        const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
+        rtSnapshotCanvas(rt, r, callback);
     }
 }
 
@@ -88,6 +92,29 @@ function rtSnapshotWebgl(
 
     state.callback = null;
     state.isFramebuffer = false;
+
+    return renderer;
+}
+
+function rtSnapshotCanvas(
+    rt: Phaser.GameObjects.RenderTexture,
+    renderer: Phaser.Renderer.WebGL.WebGLRenderer | Phaser.Renderer.Canvas.CanvasRenderer,
+    callback: Phaser.Types.Renderer.Snapshot.SnapshotCallback) {
+
+    const state: any = renderer.snapshotState;
+
+    state.callback = callback;
+    state.type = 'image/png';
+    state.encoder = 1;          // not match type Phaser.Types.Renderer.Snapshot.SnapshotState (check renderer phaser code)
+    state.getPixel = false;
+    state.x = 0;
+    state.y = 0;
+    state.width = rt.width;
+    state.height = rt.height;
+
+    CanvasSnapshot(rt.canvas, state);
+
+    state.callback = null;
 
     return renderer;
 }
