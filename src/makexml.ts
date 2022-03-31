@@ -1,5 +1,3 @@
-/// <reference path="../types/phaser.d.ts" />
-
 import { Task } from "./types";
 
 const makeXML = (task: Task): Document => {

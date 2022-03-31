@@ -1,5 +1,3 @@
-/// <reference path="../types/phaser.d.ts" />
-
 import CanvasSnapshot from "../node_modules/phaser/src/renderer/snapshot/CanvasSnapshot.js"
 import { Task } from "./types";
 

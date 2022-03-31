@@ -1,5 +1,3 @@
-/// <reference path="../types/phaser.d.ts" />
-
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 import { kerningPairs } from './kernings.js';
 import { makeTexture } from './maketexture.js';
@@ -100,7 +98,7 @@ export default class BMFFactory {
             if (offset != 0) {
                 kernings.push({ first: pairs[i].charCodeAt(0), second: pairs[i].charCodeAt(1), amount: offset });
             }
-            
+
             pairGlyph.destroy();
         }
 
