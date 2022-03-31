@@ -16,6 +16,12 @@ export default class BMFFactory {
     currentPendingSteps: number;
     onComplete: () => void;
 
+    /**
+     * Creates an instance of the class BMFFactory. This class allows you to create a bitmapFont
+     * from one of the fonts loaded in the browser, and add it to the Phaser cache of bitmapFonts.
+     * @param scene A reference to the Phaser.Scene
+     * @param onComplete Function that will be called when all tasks are completed.
+     */
     constructor(scene: Phaser.Scene, onComplete: () => void) {
         this.scene = scene;
         this.onComplete = onComplete;
@@ -28,6 +34,11 @@ export default class BMFFactory {
         this.currentPendingSteps = 0;
     }
 
+    /**
+     * Executes the tasks stored in the task queue. When all tasks have been completed, it calls
+     * the onComplete callback.
+     * @returns void
+     */
     exec() {
         const task = this.tasks.pop();
         if (task == undefined) {
@@ -51,6 +62,17 @@ export default class BMFFactory {
         this.#makeXML(task);
     }
 
+    /**
+     * Creates a task to make a bitmapfont, and adds it to the queue. The commands will not be executed 
+     * until we call the exec() function.
+     * @param key The key to be used in Phaser cache
+     * @param fontFamily The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...).
+     * This parammeter overrides the font value inside style object.
+     * @param chars String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must 
+     * include the space character (" ") if you are going to use it.
+     * @param style The text style configuration object (the same as the one used in Phaser.GameObjects.Text). 
+     * @param getKernings You are going to use the kernings?. Not using kernings reduces the generation time.
+     */
     make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
 
         if (style.fontSize == undefined) {
