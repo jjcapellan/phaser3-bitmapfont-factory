@@ -1,6 +1,7 @@
 /// <reference path="../types/phaser.d.ts" />
 
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
+import { kerningPairs } from './kernings.js';
 import { makeTexture } from './maketexture.js';
 import { makeXML } from './makexml';
 import { Task } from './types';
@@ -36,22 +37,20 @@ export default class BMFFactory {
             return;
         }
 
-        setTimeout(() => {
-            // Make glyps
-            this.#makeGlyps(task);
+        // Make glyps
+        this.#makeGlyps(task);
 
-            // Set texture dimensions
-            this.#setDimensions(task);
+        // Set texture dimensions
+        this.#setDimensions(task);
 
-            // Calc kernings
-            if (task.getKernings) {
-                this.#calcKernings(task);
-            }
+        // Calc kernings
+        if (task.getKernings) {
+            this.#calcKernings(task);
+        }
 
-            this.currentPendingSteps = 2;
-            this.#makeTexture(task); // async
-            this.#makeXML(task);
-        });
+        this.currentPendingSteps = 2;
+        this.#makeTexture(task); // async
+        this.#makeXML(task);
     }
 
     make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
@@ -84,20 +83,30 @@ export default class BMFFactory {
         const kernings = task.kernings;
         const chars = task.chars;
         const widths = task.fontWidths;
+        const pairs = this.#getKerningPairs(task);
 
-        for (let i = 0; i < chars.length; i++) {
-            for (let j = 0; j < chars.length; j++) {
-                let w1 = widths[i] + widths[j];
-                let pair = this.scene.make.text({ text: chars[i] + chars[j], style: task.style }, false);
-                let w2 = pair.width;
-                let offset = w2 - w1;
-                if (offset != 0) {
-                    kernings.push({ first: chars[i].charCodeAt(0), second: chars[j].charCodeAt(0), amount: offset });
-                }
-                pair.destroy();
+        for (let i = 0; i < pairs.length; i++) {
+
+            const pair = pairs[i].split('');
+
+            const w1 = widths[chars.indexOf(pair[0])] + widths[chars.indexOf(pair[1])];
+
+            const pairGlyph = this.scene.make.text({ text: pairs[i], style: task.style }, false);
+
+            const w2 = pairGlyph.width;
+
+            const offset = w2 - w1;
+
+            if (offset != 0) {
+                kernings.push({ first: pairs[i].charCodeAt(0), second: pairs[i].charCodeAt(1), amount: offset });
             }
+            
+            pairGlyph.destroy();
         }
+
     }
+
+
 
 
     #ceilPowerOfTwo = (n: number): number => {
@@ -140,6 +149,17 @@ export default class BMFFactory {
     #makeXML = (task: Task) => {
         this.currentXML = makeXML(task);
         this.#step(task);
+    }
+
+    #getKerningPairs = (task: Task): string[] => {
+        const pairs = [];
+        for (let i = 0; i < kerningPairs.length; i++) {
+            const pair = kerningPairs[i].split('');
+            if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
+                pairs.push(kerningPairs[i]);
+            }
+        }
+        return pairs;
     }
 
     #step = (task: Task) => {
