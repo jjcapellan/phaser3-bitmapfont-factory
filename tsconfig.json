@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "typeRoots": [
+            "node_modules/@types",
+            "node_modules/phaser/types"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "node_modules/phaser/types"
+    ]
+}
