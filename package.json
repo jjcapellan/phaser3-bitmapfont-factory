@@ -1,7 +1,7 @@
 {
-  "name": "phaser3-text-to-bitmapfont",
+  "name": "phaser3-bitmapfont-factory",
   "version": "1.0.0",
-  "description": "Loads any font as bitmapFont in Phaser3",
+  "description": "Creates bitmapfonts in Phaser3 at runtime, using available browser fonts",
   "main": "dist/bmff.js",
   "umd:main": "dist/bmff.umd.js",
   "module": "dist/bmff.ems.js",
@@ -17,9 +17,12 @@
     "bitmapFont",
     "font",
     "text",
-    "converter",
-    "loader"
+    "converter"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jjcapellan/phaser3-bitmapfont-factory"
+  },
   "author": "Juan Jose Capellan",
   "license": "MIT",
   "devDependencies": {
