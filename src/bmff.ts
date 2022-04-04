@@ -16,6 +16,13 @@ export default class BMFFactory {
     currentPendingSteps: number;
     onComplete: () => void;
 
+
+    #onProgress: (progress: number) => void = (n) => { };
+    // Number of tasks when exec() is called first time.
+    #totalTasks: number = 0;
+    // Number between 0 and 1. Progress of current task queue.
+    #progress: number = 0;
+
     /**
      * Creates an instance of the class BMFFactory. This class allows you to create a bitmapFont
      * from one of the fonts loaded in the browser, and add it to the Phaser cache of bitmapFonts.
@@ -44,14 +51,22 @@ export default class BMFFactory {
      * @returns void
      */
     exec() {
+        if (this.#totalTasks == 0) {
+            this.#totalTasks = this.tasks.length;
+        }
+
         const task = this.tasks.pop();
         if (task == undefined) {
+            this.#totalTasks = 0;
+            this.#progress = 0;
             this.onComplete();
             return;
         }
 
+
         // Make glyphs
         this.#makeGlyphs(task);
+        this.#setProgress(0.25);
 
         // Set texture dimensions
         this.#setDimensions(task);
@@ -60,6 +75,7 @@ export default class BMFFactory {
         if (task.getKernings) {
             this.#calcKernings(task);
         }
+        this.#setProgress(0.25);
 
         this.currentPendingSteps = 2;
         this.#makeTexture(task); // async
@@ -102,6 +118,10 @@ export default class BMFFactory {
 
         this.tasks.push(task);
     }// End make()
+
+    setOnProgress(callback: (progress: number) => void) {
+        this.#onProgress = callback;
+    }
 
     #calcKernings = (task: Task) => {
         const kernings = task.kernings;
@@ -167,11 +187,13 @@ export default class BMFFactory {
 
     #makeTexture = async (task: Task) => {
         this.currentTexture = await makeTexture(this.scene, task);
+        this.#setProgress(0.25);
         this.#step(task);
     }
 
     #makeXML = (task: Task) => {
         this.currentXML = makeXML(task);
+        this.#setProgress(0.25);
         this.#step(task);
     }
 
@@ -184,6 +206,11 @@ export default class BMFFactory {
             }
         }
         return pairs;
+    }
+
+    #setProgress = (current: number) => {
+        this.#progress += (current * 1) / this.#totalTasks;
+        this.#onProgress(Math.round(this.#progress * 100) / 100);
     }
 
     #step = (task: Task) => {
