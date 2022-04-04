@@ -16,7 +16,7 @@ export default class BMFFactory {
     currentPendingSteps: number;
     onComplete: () => void;
 
-    // Common and browser default fonts grouped in arrays by type
+    // Common and browser default fonts grouped in arrays by type, to use with make() method.
     defaultFonts = {
         sansSerif: sansSerif,
         serif: serif,
@@ -93,22 +93,31 @@ export default class BMFFactory {
      * Creates a task to make a bitmapfont, and adds it to the queue. The commands will not be executed 
      * until we call the exec() function.
      * @param key The key to be used in Phaser cache
-     * @param fontFamily The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...).
-     * This parammeter overrides the font value inside style object.
+     * @param fontFamily The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or 
+     * an array of names (first valid font will be selected).
      * @param chars String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must 
      * include the space character (" ") if you are going to use it.
-     * @param style The text style configuration object (the same as the one used in Phaser.GameObjects.Text). 
+     * @param style The text style configuration object (the same as the one used in Phaser.GameObjects.Text).
+     * FontName and FontFamily properties of this object are ignored.
      * @param getKernings You are going to use the kernings?. Not using kernings reduces the generation time.
      */
-    make(key: string, fontFamily: string, chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
+    make(key: string, fontFamily: string | string[], chars: string, style: Phaser.Types.GameObjects.Text.TextStyle = {}, getKernings: boolean) {
 
         if (style.fontSize == undefined) {
             style.fontSize = '32px';
         }
 
+        let _fontFamily = '';
+
+        if (typeof fontFamily == 'string') {
+            _fontFamily = fontFamily;
+        } else {
+            _fontFamily = this.#getValidFont(fontFamily);
+        }
+
         const task: Task = {
             chars: chars,
-            fontFamily: fontFamily,
+            fontFamily: _fontFamily,
             fontHeight: 0,
             fontWidths: [],
             glyphs: [],
@@ -179,6 +188,17 @@ export default class BMFFactory {
 
         // Executes next task
         this.exec();
+    }
+
+    #getValidFont = (fonts: string[]): string => {
+        let font = '';
+        for (let i = 0; i < fonts.length; i++) {
+            if (this.check(fonts[i])) {
+                font = fonts[i];
+                break;
+            }
+        }
+        return font;
     }
 
     #makeGlyphs = (task: Task) => {
