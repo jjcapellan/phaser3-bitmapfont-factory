@@ -1,5 +1,5 @@
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
-import { kerningPairs } from './constants.js';
+import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXML } from './makexml';
 import { Task } from './types';
@@ -15,6 +15,13 @@ export default class BMFFactory {
     currentTexture: Phaser.Textures.Texture;
     currentPendingSteps: number;
     onComplete: () => void;
+
+    // Common and browser default fonts grouped in arrays by type
+    defaultFonts = {
+        sansSerif: sansSerif,
+        serif: serif,
+        monospace: monospace
+    }
 
 
     #onProgress: (progress: number) => void = (n) => { };
