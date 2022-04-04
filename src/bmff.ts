@@ -50,8 +50,8 @@ export default class BMFFactory {
             return;
         }
 
-        // Make glyps
-        this.#makeGlyps(task);
+        // Make glyphs
+        this.#makeGlyphs(task);
 
         // Set texture dimensions
         this.#setDimensions(task);
@@ -88,7 +88,7 @@ export default class BMFFactory {
             fontFamily: fontFamily,
             fontHeight: 0,
             fontWidths: [],
-            glyps: [],
+            glyphs: [],
             getKernings: getKernings,
             kernings: [],
             key: key,
@@ -154,14 +154,14 @@ export default class BMFFactory {
         this.exec();
     }
 
-    #makeGlyps = (task: Task) => {
+    #makeGlyphs = (task: Task) => {
         const chars = task.chars;
         const count = chars.length;
 
         for (let i = 0; i < count; i++) {
             const char = chars[i];
             let glyp = this.scene.make.text({ text: char, style: task.style }, false);
-            task.glyps.push(glyp);
+            task.glyphs.push(glyp);
         }
     }
 
@@ -194,15 +194,15 @@ export default class BMFFactory {
     }
 
     #setDimensions = (task: Task) => {
-        const glyps = task.glyps;
-        const count = glyps.length;
+        const glyphs = task.glyphs;
+        const count = glyphs.length;
         let maxCharWidth = 0;
         let textureWidth = 0;
         let textureHeight = 0;
 
         // Gets char widths
         for (let i = 0; i < count; i++) {
-            let width = glyps[i].getBounds().width;
+            let width = glyphs[i].getBounds().width;
             task.fontWidths.push(width);
             textureWidth += width;
             if (width > maxCharWidth) {
@@ -211,7 +211,7 @@ export default class BMFFactory {
         }
 
         // Chars height
-        task.fontHeight = glyps[0].getBounds().height;
+        task.fontHeight = glyphs[0].getBounds().height;
         textureHeight = task.fontHeight;
 
         // Apply size limits

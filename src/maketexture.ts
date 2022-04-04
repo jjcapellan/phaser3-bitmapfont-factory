@@ -7,7 +7,7 @@ async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Text
     const rtHeight = task.textureHeight;
     const rtWidth = task.textureWidth;
     const fontHeight = task.fontHeight;
-    const glyps = task.glyps;
+    const glyphs = task.glyphs;
     const key = task.key;
 
     const rt = scene.make.renderTexture({ x: 0, y: 0, width: rtWidth, height: rtHeight, }, false);
@@ -16,8 +16,8 @@ async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Text
 
     let xPos = 0;
     let yPos = 0;
-    for (let i = 0; i < glyps.length; i++) {
-        rt.draw(glyps[i], xPos, yPos);
+    for (let i = 0; i < glyphs.length; i++) {
+        rt.draw(glyphs[i], xPos, yPos);
         xPos += widths[i];
         if (xPos > rtWidth) {
             xPos = 0;
