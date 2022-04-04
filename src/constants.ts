@@ -19,6 +19,7 @@ const sansSerif = [
   'Arial',
   'Calibri',
   'Helvetica',
+  'Roboto',
   'Trebuchet MS',
   'Verdana'
 ]
@@ -26,7 +27,6 @@ const sansSerif = [
 const serif = [
   'Garamond',
   'Georgia',
-  'Roboto',
   'serif',
   'Times',
   'Times New Roman'
