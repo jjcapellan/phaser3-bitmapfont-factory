@@ -39,4 +39,4 @@ const monospaceFonts = [
   'monospace'
 ]
 
-export { kerningPairs }
+export { kerningPairs, sanserifFonts, serifFonts, monospaceFonts }
