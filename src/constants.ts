@@ -15,7 +15,7 @@ const kerningPairs = [
 
 // Default and common web-safe fonts by type
 
-const sanserifFonts = [
+const sansSerif = [
   'Arial',
   'Calibri',
   'Helvetica',
@@ -23,7 +23,7 @@ const sanserifFonts = [
   'Verdana'
 ]
 
-const serifFonts = [
+const serif = [
   'Garamond',
   'Georgia',
   'Roboto',
@@ -32,11 +32,11 @@ const serifFonts = [
   'Times New Roman'
 ]
 
-const monospaceFonts = [
+const monospace = [
   'Consolas',
   'Courier',
   'Courier New',
   'monospace'
 ]
 
-export { kerningPairs, sanserifFonts, serifFonts, monospaceFonts }
+export { kerningPairs, sansSerif, serif, monospace }
