@@ -48,6 +48,11 @@ export default class BMFFactory {
         this.currentPendingSteps = 0;
     }
 
+    /**
+     * Checks if a font is availble to use.
+     * @param fontFamily Name of the font
+     * @returns True if font is available
+     */
     check(fontFamily: string): boolean {
         return document.fonts.check('12px ' + fontFamily);
     }
