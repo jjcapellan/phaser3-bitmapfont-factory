@@ -1,5 +1,5 @@
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
-import { kerningPairs } from './kernings.js';
+import { kerningPairs } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXML } from './makexml';
 import { Task } from './types';

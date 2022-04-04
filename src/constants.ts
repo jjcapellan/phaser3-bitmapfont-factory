@@ -13,4 +13,30 @@ const kerningPairs = [
   'r.', 'v,', 'v.', 'w,', 'w.', 'y,', 'y.'
 ];
 
+// Default and common web-safe fonts by type
+
+const sanserifFonts = [
+  'Arial',
+  'Calibri',
+  'Helvetica',
+  'Trebuchet MS',
+  'Verdana'
+]
+
+const serifFonts = [
+  'Garamond',
+  'Georgia',
+  'Roboto',
+  'serif',
+  'Times',
+  'Times New Roman'
+]
+
+const monospaceFonts = [
+  'Consolas',
+  'Courier',
+  'Courier New',
+  'monospace'
+]
+
 export { kerningPairs }
