@@ -34,6 +34,10 @@ export default class BMFFactory {
         this.currentPendingSteps = 0;
     }
 
+    check(fontFamily: string): boolean {
+        return document.fonts.check('12px ' + fontFamily);
+    }
+
     /**
      * Executes the tasks stored in the task queue. When all tasks have been completed, it calls
      * the onComplete callback.
