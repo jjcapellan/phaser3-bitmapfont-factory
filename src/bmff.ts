@@ -1,20 +1,20 @@
-import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXML } from './makexml';
 import { Task } from './types';
+import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
 export default class BMFFactory {
 
-    scene: Phaser.Scene;
-    tasks: Task[];
+    currentPendingSteps: number;
+    currentTexture: Phaser.Textures.Texture;
+    currentXML: Document;
     isIdle: boolean;
     maxTextureSize: number;
-    powerOfTwo: boolean;
-    currentXML: Document;
-    currentTexture: Phaser.Textures.Texture;
-    currentPendingSteps: number;
     onComplete: () => void;
+    powerOfTwo: boolean;
+    scene: Phaser.Scene;
+    tasks: Task[];
 
     // Common and browser default fonts grouped in arrays by type, to use with make() method.
     defaultFonts = {
@@ -74,7 +74,6 @@ export default class BMFFactory {
             this.onComplete();
             return;
         }
-
 
         // Make glyphs
         this.#makeGlyphs(task);
@@ -171,9 +170,6 @@ export default class BMFFactory {
 
     }
 
-
-
-
     #ceilPowerOfTwo = (n: number): number => {
         // Checks power of two (in binary is 1[...0], so 10000 ^ 10001 == 1)
         if ((n ^ (n + 1)) != 1) {
@@ -193,6 +189,17 @@ export default class BMFFactory {
 
         // Executes next task
         this.exec();
+    }
+
+    #getKerningPairs = (task: Task): string[] => {
+        const pairs = [];
+        for (let i = 0; i < kerningPairs.length; i++) {
+            const pair = kerningPairs[i].split('');
+            if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
+                pairs.push(kerningPairs[i]);
+            }
+        }
+        return pairs;
     }
 
     #getValidFont = (fonts: string[]): string => {
@@ -227,17 +234,6 @@ export default class BMFFactory {
         this.currentXML = makeXML(task);
         this.#setProgress(0.25);
         this.#step(task);
-    }
-
-    #getKerningPairs = (task: Task): string[] => {
-        const pairs = [];
-        for (let i = 0; i < kerningPairs.length; i++) {
-            const pair = kerningPairs[i].split('');
-            if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
-                pairs.push(kerningPairs[i]);
-            }
-        }
-        return pairs;
     }
 
     #setProgress = (current: number) => {
