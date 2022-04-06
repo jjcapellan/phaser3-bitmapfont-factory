@@ -1,12 +1,12 @@
 import { Task } from "./types";
 
 const makeXML = (task: Task): Document => {
-    const fontFamily = task.fontFamily;
-    const size = task.style.fontSize.replace('px', '');
     const chars = task.chars;
     const count = task.chars.length;
-    const widths = task.fontWidths;
+    const fontFamily = task.fontFamily;
     const height = task.fontHeight;
+    const size = task.style.fontSize.replace('px', '');
+    const widths = task.fontWidths;
 
 
 

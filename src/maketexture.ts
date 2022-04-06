@@ -3,12 +3,12 @@ import { Task } from "./types";
 
 async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Textures.Texture> {
 
-    const widths = task.fontWidths;
-    const rtHeight = task.textureHeight;
-    const rtWidth = task.textureWidth;
     const fontHeight = task.fontHeight;
     const glyphs = task.glyphs;
     const key = task.key;
+    const rtHeight = task.textureHeight;
+    const rtWidth = task.textureWidth;
+    const widths = task.fontWidths;
 
     const rt = scene.make.renderTexture({ x: 0, y: 0, width: rtWidth, height: rtHeight, }, false);
     rt.setOrigin(0);
@@ -70,17 +70,17 @@ function rtSnapshotWebgl(
     const currentFrameBuffer = renderer.currentFramebuffer;
     const state = renderer.snapshotState;
 
+    state.bufferHeight = rt.height;
+    state.bufferWidth = rt.width;
     state.callback = callback;
-    state.type = 'image/png';
     state.encoderOptions = 1;
     state.getPixel = false;
-    state.x = 0;
-    state.y = 0;
-    state.width = rt.width;
     state.height = rt.height;
     state.isFramebuffer = true;
-    state.bufferWidth = rt.width;
-    state.bufferHeight = rt.height;
+    state.type = 'image/png';
+    state.width = rt.width;
+    state.x = 0;
+    state.y = 0;
 
     renderer.setFramebuffer(rt.renderTarget.framebuffer);
 
@@ -102,13 +102,13 @@ function rtSnapshotCanvas(
     const state: any = renderer.snapshotState;
 
     state.callback = callback;
-    state.type = 'image/png';
     state.encoder = 1;          // not match type Phaser.Types.Renderer.Snapshot.SnapshotState (check renderer phaser code)
     state.getPixel = false;
+    state.height = rt.height;
+    state.type = 'image/png';
+    state.width = rt.width;
     state.x = 0;
     state.y = 0;
-    state.width = rt.width;
-    state.height = rt.height;
 
     CanvasSnapshot(rt.canvas, state);
 
