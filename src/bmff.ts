@@ -9,10 +9,8 @@ export default class BMFFactory {
     currentPendingSteps: number;
     currentTexture: Phaser.Textures.Texture;
     currentXML: Document;
-    isIdle: boolean;
     maxTextureSize: number;
     onComplete: () => void;
-    powerOfTwo: boolean;
     scene: Phaser.Scene;
     tasks: Task[];
 
@@ -40,9 +38,7 @@ export default class BMFFactory {
         this.scene = scene;
         this.onComplete = onComplete;
         this.tasks = [];
-        this.isIdle = true;
         this.maxTextureSize = 2048;
-        this.powerOfTwo = true;
         this.currentXML = null;
         this.currentTexture = null;
         this.currentPendingSteps = 0;
