@@ -97,14 +97,14 @@ export default class BMFFactory {
 
         // Make glyphs
         this.#makeAllGlyphs();
-        this.#setProgress(0.25);
+        this.#setAllProgress(0.25);
 
         // Set texture dimensions
         this.#setAllDimensions();
 
         // Calc kernings
         this.#calcAllKernings();
-        this.#setProgress(0.25);
+        this.#setAllProgress(0.25);
 
         this.currentPendingSteps = 2;
         this.#makeAllTexture(); // async
@@ -322,6 +322,7 @@ export default class BMFFactory {
 
     #makeAllTexture = async () => {
         this.currentTexture = await makeAllTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
+        this.#setAllProgress(0.25);
         this.#step(null);
     }
 
@@ -333,7 +334,15 @@ export default class BMFFactory {
 
     #makeAllXML = async () => {
         this.currentXMLArr = makeAllXML(this.tasks);
+        this.#setAllProgress(0.25);
         this.#step(null);
+    }
+
+    #setAllProgress = (n: number) => {
+        this.#progress += n;
+        console.log(this.#progress);
+        this.#onProgress(Math.round(this.#progress * 100) / 100);
+
     }
 
     #setProgress = (current: number) => {
@@ -415,14 +424,12 @@ export default class BMFFactory {
                 rowWidth += glyph.width;
 
                 if (rowWidth > this.maxTextureSize) {
-                    textureWidth = rowWidth - glyph.width;
-                    rowWidth = 0;
+                    textureWidth = this.maxTextureSize;
+                    rowWidth = glyph.width;
                     y += rowHeight;
                     rowHeight = glyph.height;
                     textureHeight += rowHeight;
                     x = 0;
-                    gBounds[j] = { x: x, y: y, w: glyph.width, h: rowHeight };
-                    continue;
                 }
 
                 if (rowWidth > textureWidth) {
