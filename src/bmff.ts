@@ -1,6 +1,6 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
-import { makeTexture } from './maketexture.js';
-import { makeXML } from './makexml';
+import { makeAllTexture, makeTexture } from './maketexture.js';
+import { makeAllXML, makeXML } from './makexml';
 import { Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
@@ -9,6 +9,7 @@ export default class BMFFactory {
     currentPendingSteps: number;
     currentTexture: Phaser.Textures.Texture;
     currentXML: Document;
+    currentXMLArr: Document[];
     maxTextureSize: number;
     onComplete: () => void;
     scene: Phaser.Scene;
@@ -90,6 +91,24 @@ export default class BMFFactory {
         this.currentPendingSteps = 2;
         this.#makeTexture(task); // async
         this.#makeXML(task);
+    }
+
+    execPacked() {
+
+        // Make glyphs
+        this.#makeAllGlyphs();
+        this.#setProgress(0.25);
+
+        // Set texture dimensions
+        this.#setAllDimensions();
+
+        // Calc kernings
+        this.#calcAllKernings();
+        this.#setProgress(0.25);
+
+        this.currentPendingSteps = 2;
+        this.#makeAllTexture(); // async
+        this.#makeAllXML();
     }
 
     /**
@@ -227,6 +246,26 @@ export default class BMFFactory {
         this.exec();
     }
 
+    #finishPacked = () => {
+        const texture = this.currentTexture;
+        const xmls = this.currentXMLArr;
+        const textureKey = this.tasks[0].key;
+
+        for (let i = 0; i < xmls.length; i++) {
+            const xml = xmls[i];
+            const frame = this.scene.textures.getFrame(textureKey);
+            const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
+
+            this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
+        }
+
+        this.#totalTasks = 0;
+        this.#progress = 0;
+        this.onComplete();
+    }
+
+
+
     #getKerningPairs = (task: Task): string[] => {
         const pairs = [];
         for (let i = 0; i < kerningPairs.length; i++) {
@@ -281,10 +320,20 @@ export default class BMFFactory {
         this.#step(task);
     }
 
+    #makeAllTexture = async () => {
+        this.currentTexture = await makeAllTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
+        this.#step(null);
+    }
+
     #makeXML = (task: Task) => {
         this.currentXML = makeXML(task);
         this.#setProgress(0.25);
         this.#step(task);
+    }
+
+    #makeAllXML = async () => {
+        this.currentXMLArr = makeAllXML(this.tasks);
+        this.#step(null);
     }
 
     #setProgress = (current: number) => {
@@ -295,7 +344,11 @@ export default class BMFFactory {
     #step = (task: Task) => {
         this.currentPendingSteps -= 1;
         if (this.currentPendingSteps == 0) {
-            this.#finish(task.key);
+            if (task) {
+                this.#finish(task.key);
+            } else {
+                this.#finishPacked();
+            }
         }
     }
 
