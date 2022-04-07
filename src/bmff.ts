@@ -21,6 +21,9 @@ export default class BMFFactory {
         monospace: monospace
     }
 
+    #textureWidth: number = 0;
+    #textureHeight: number = 0;
+
 
     #onProgress: (progress: number) => void = (n) => { };
     // Number of tasks when exec() is called first time.
@@ -121,6 +124,7 @@ export default class BMFFactory {
             fontHeight: 0,
             fontWidths: [],
             glyphs: [],
+            glyphsBounds: [],
             getKernings: getKernings,
             kernings: [],
             key: key,
@@ -292,6 +296,58 @@ export default class BMFFactory {
 
         task.textureWidth = textureWidth;
         task.textureHeight = textureHeight;
+
+    }
+
+    #setAllDimensions = (task: Task) => {
+        const glyphs = task.glyphs;
+        const tasks = this.tasks;
+        let textureWidth = 0;
+        let textureHeight = 0;
+        let rowHeight = 0;
+        let rowWidth = 0;
+        let x = 0;
+        let y = 0;
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            const glyphs = task.glyphs;
+            const gBounds = task.glyphsBounds;
+
+            if (glyphs[0].height > rowHeight) {
+                rowHeight = glyphs[0].height;
+            }
+
+            if (rowHeight > textureHeight) {
+                textureHeight = rowHeight;
+            }
+
+            for (let j = 0; j < glyphs.length; j++) {
+                let glyph = glyphs[j];
+                rowWidth += glyph.width;
+
+                if (rowWidth > this.maxTextureSize) {
+                    textureWidth = rowWidth - glyph.width;
+                    rowWidth = 0;
+                    y += rowHeight;
+                    rowHeight = glyph.height;
+                    textureHeight += rowHeight;
+                    x = 0;
+                    gBounds[j] = { x: x, y: y, w: glyph.width, h: rowHeight };
+                    continue;
+                }
+
+                if (rowWidth > textureWidth) {
+                    textureWidth = rowWidth;
+                }
+
+                gBounds[j] = { x: x, y: y, w: glyph.width, h: rowHeight };
+                x += glyph.width;
+            } // end for
+        }// end for
+
+        this.#textureWidth = textureWidth;
+        this.#textureHeight = textureHeight;
 
     }
 
