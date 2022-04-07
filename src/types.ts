@@ -11,6 +11,7 @@ type Task = {
     fontWidths: number[],
     getKernings: boolean,
     glyphs: Phaser.GameObjects.Text[],
+    glyphsBounds: { x: number, y: number, w: number, h: number }[],
     kernings: Kerning[],
     key: string,
     style: Phaser.Types.GameObjects.Text.TextStyle,
