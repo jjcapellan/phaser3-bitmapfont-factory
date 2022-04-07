@@ -145,4 +145,4 @@ const makeAllXML = (tasks: Task[]): Document[] => {
     return xmls;
 }
 
-export { makeXML }
+export { makeXML, makeAllXML }
