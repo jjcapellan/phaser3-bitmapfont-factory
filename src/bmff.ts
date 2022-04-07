@@ -299,8 +299,7 @@ export default class BMFFactory {
 
     }
 
-    #setAllDimensions = (task: Task) => {
-        const glyphs = task.glyphs;
+    #setAllDimensions = () => {
         const tasks = this.tasks;
         let textureWidth = 0;
         let textureHeight = 0;
