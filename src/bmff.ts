@@ -170,6 +170,42 @@ export default class BMFFactory {
 
     }
 
+    #calcAllKernings = () => {
+        const tasks = this.tasks;
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            if (!task.getKernings) {
+                continue;
+            }
+
+            const kernings = task.kernings;
+            const chars = task.chars;
+            const bounds = task.glyphsBounds;
+            const pairs = this.#getKerningPairs(task);
+
+            for (let j = 0; j < pairs.length; j++) {
+
+                const pair = pairs[j].split('');
+
+                const w1 = bounds[chars.indexOf(pair[0])].w + bounds[chars.indexOf(pair[1])].w;
+
+                const pairGlyph = this.scene.make.text({ text: pairs[j], style: task.style }, false);
+
+                const w2 = pairGlyph.width;
+
+                const offset = w2 - w1;
+
+                if (offset != 0) {
+                    kernings.push({ first: pairs[j].charCodeAt(0), second: pairs[j].charCodeAt(1), amount: offset });
+                }
+
+                pairGlyph.destroy();
+            }// end for
+        }// end for
+
+    }
+
     #ceilPowerOfTwo = (n: number): number => {
         // Checks power of two (in binary is 1[...0], so 10000 ^ 10001 == 1)
         if ((n ^ (n + 1)) != 1) {
