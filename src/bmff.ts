@@ -220,6 +220,21 @@ export default class BMFFactory {
         }
     }
 
+    #makeAllGlyphs = () => {
+        const tasks = this.tasks;
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            const chars = task.chars;
+            const count = chars.length;
+
+            for (let j = 0; j < count; j++) {
+                const char = chars[j];
+                let glyp = this.scene.make.text({ text: char, style: task.style }, false);
+                task.glyphs.push(glyp);
+            }
+        }
+    }
+
     #makeTexture = async (task: Task) => {
         this.currentTexture = await makeTexture(this.scene, task);
         this.#setProgress(0.25);
