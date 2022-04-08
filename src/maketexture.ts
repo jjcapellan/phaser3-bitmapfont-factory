@@ -1,7 +1,7 @@
 import CanvasSnapshot from "../node_modules/phaser/src/renderer/snapshot/CanvasSnapshot.js"
 import { Task } from "./types";
 
-async function makeAllTexture(scene: Phaser.Scene, tasks: Task[], width: number, height: number): Promise<Phaser.Textures.Texture> {
+async function makeTexture(scene: Phaser.Scene, tasks: Task[], width: number, height: number): Promise<Phaser.Textures.Texture> {
 
     const key = tasks[0].key;
     const rtHeight = height;
@@ -114,4 +114,4 @@ function rtSnapshotCanvas(
     return renderer;
 }
 
-export { makeAllTexture }
+export { makeTexture }

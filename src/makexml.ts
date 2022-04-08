@@ -1,6 +1,6 @@
 import { Task } from "./types";
 
-const makeAllXML = (tasks: Task[]): Document[] => {
+const makeXMLs = (tasks: Task[]): Document[] => {
 
     let xmls: Document[] = [];
 
@@ -73,4 +73,4 @@ const makeAllXML = (tasks: Task[]): Document[] => {
     return xmls;
 }
 
-export { makeAllXML }
+export { makeXMLs }

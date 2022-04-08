@@ -1,6 +1,6 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
-import { makeAllTexture } from './maketexture.js';
-import { makeAllXML } from './makexml';
+import { makeTexture } from './maketexture.js';
+import { makeXMLs } from './makexml';
 import { Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
@@ -8,7 +8,7 @@ export default class BMFFactory {
 
     currentPendingSteps: number;
     currentTexture: Phaser.Textures.Texture;
-    currentAllXML: Document[];
+    currentXMLs: Document[];
     maxTextureSize: number;
     onComplete: () => void;
     scene: Phaser.Scene;
@@ -60,22 +60,22 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    execPacked() {
+    exec() {
 
         // Make glyphs
-        this.#makeAllGlyphs();
-        this.#setAllProgress(0.25);
+        this.#makeGlyphs();
+        this.#setProgress(0.25);
 
         // Set texture dimensions
-        this.#setAllDimensions();
+        this.#calcBounds();
 
         // Calc kernings
-        this.#calcAllKernings();
-        this.#setAllProgress(0.25);
+        this.#calcKernings();
+        this.#setProgress(0.25);
 
         this.currentPendingSteps = 2;
-        this.#makeAllTexture(); // async
-        this.#makeAllXML();
+        this.#makeTexture(); // async
+        this.#makeXMLs();
     }
 
     /**
@@ -129,134 +129,7 @@ export default class BMFFactory {
         this.#onProgress = callback;
     }
 
-    #calcAllKernings = () => {
-        const tasks = this.tasks;
-
-        for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            if (!task.getKernings) {
-                continue;
-            }
-
-            const kernings = task.kernings;
-            const chars = task.chars;
-            const bounds = task.glyphsBounds;
-            const pairs = this.#getKerningPairs(task);
-
-            for (let j = 0; j < pairs.length; j++) {
-
-                const pair = pairs[j].split('');
-
-                const w1 = bounds[chars.indexOf(pair[0])].w + bounds[chars.indexOf(pair[1])].w;
-
-                const pairGlyph = this.scene.make.text({ text: pairs[j], style: task.style }, false);
-
-                const w2 = pairGlyph.width;
-
-                const offset = w2 - w1;
-
-                if (offset != 0) {
-                    kernings.push({ first: pairs[j].charCodeAt(0), second: pairs[j].charCodeAt(1), amount: offset });
-                }
-
-                pairGlyph.destroy();
-            }// end for
-        }// end for
-
-    }
-
-    #ceilPowerOfTwo = (n: number): number => {
-        // Checks power of two (in binary is 1[...0], so 10000 ^ 10001 == 1)
-        if ((n ^ (n + 1)) != 1) {
-            // 10011 << 1 ; 100110 & (1 << 5) ; 100000 (upper power of two)
-            n = (n << 1) & (1 << (n.toString(2).length));
-        }
-        return n;
-    }
-
-    #finishPacked = () => {
-        const texture = this.currentTexture;
-        const xmls = this.currentAllXML;
-        const textureKey = this.tasks[0].key;
-
-        for (let i = 0; i < xmls.length; i++) {
-            const xml = xmls[i];
-            const frame = this.scene.textures.getFrame(textureKey);
-            const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
-
-            this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
-        }
-
-        this.#totalTasks = 0;
-        this.#progress = 0;
-        this.onComplete();
-    }
-
-
-
-    #getKerningPairs = (task: Task): string[] => {
-        const pairs = [];
-        for (let i = 0; i < kerningPairs.length; i++) {
-            const pair = kerningPairs[i].split('');
-            if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
-                pairs.push(kerningPairs[i]);
-            }
-        }
-        return pairs;
-    }
-
-    #getValidFont = (fonts: string[]): string => {
-        let font = '';
-        for (let i = 0; i < fonts.length; i++) {
-            if (this.check(fonts[i])) {
-                font = fonts[i];
-                break;
-            }
-        }
-        return font;
-    }
-
-    #makeAllGlyphs = () => {
-        const tasks = this.tasks;
-        for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            const chars = task.chars;
-            const count = chars.length;
-
-            for (let j = 0; j < count; j++) {
-                const char = chars[j];
-                let glyp = this.scene.make.text({ text: char, style: task.style }, false);
-                task.glyphs.push(glyp);
-            }
-        }
-    }
-
-    #makeAllTexture = async () => {
-        this.currentTexture = await makeAllTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
-        this.#setAllProgress(0.25);
-        this.#step(null);
-    }
-
-    #makeAllXML = async () => {
-        this.currentAllXML = makeAllXML(this.tasks);
-        this.#setAllProgress(0.25);
-        this.#step(null);
-    }
-
-    #setAllProgress = (n: number) => {
-        this.#progress += n;
-        this.#onProgress(Math.round(this.#progress * 100) / 100);
-
-    }
-
-    #step = (task: Task) => {
-        this.currentPendingSteps -= 1;
-        if (this.currentPendingSteps == 0) {
-            this.#finishPacked();
-        }
-    }
-
-    #setAllDimensions = () => {
+    #calcBounds = () => {
         const tasks = this.tasks;
         let textureWidth = 0;
         let textureHeight = 0;
@@ -301,6 +174,135 @@ export default class BMFFactory {
         this.#textureHeight = textureHeight;
 
     }
+
+    #calcKernings = () => {
+        const tasks = this.tasks;
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            if (!task.getKernings) {
+                continue;
+            }
+
+            const kernings = task.kernings;
+            const chars = task.chars;
+            const bounds = task.glyphsBounds;
+            const pairs = this.#getKerningPairs(task);
+
+            for (let j = 0; j < pairs.length; j++) {
+
+                const pair = pairs[j].split('');
+
+                const w1 = bounds[chars.indexOf(pair[0])].w + bounds[chars.indexOf(pair[1])].w;
+
+                const pairGlyph = this.scene.make.text({ text: pairs[j], style: task.style }, false);
+
+                const w2 = pairGlyph.width;
+
+                const offset = w2 - w1;
+
+                if (offset != 0) {
+                    kernings.push({ first: pairs[j].charCodeAt(0), second: pairs[j].charCodeAt(1), amount: offset });
+                }
+
+                pairGlyph.destroy();
+            }// end for
+        }// end for
+
+    }
+
+    #ceilPowerOfTwo = (n: number): number => {
+        // Checks power of two (in binary is 1[...0], so 10000 ^ 10001 == 1)
+        if ((n ^ (n + 1)) != 1) {
+            // 10011 << 1 ; 100110 & (1 << 5) ; 100000 (upper power of two)
+            n = (n << 1) & (1 << (n.toString(2).length));
+        }
+        return n;
+    }
+
+    #finish = () => {
+        const texture = this.currentTexture;
+        const xmls = this.currentXMLs;
+        const textureKey = this.tasks[0].key;
+
+        for (let i = 0; i < xmls.length; i++) {
+            const xml = xmls[i];
+            const frame = this.scene.textures.getFrame(textureKey);
+            const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
+
+            this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
+        }
+
+        this.#totalTasks = 0;
+        this.#progress = 0;
+        this.onComplete();
+    }
+
+
+
+    #getKerningPairs = (task: Task): string[] => {
+        const pairs = [];
+        for (let i = 0; i < kerningPairs.length; i++) {
+            const pair = kerningPairs[i].split('');
+            if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
+                pairs.push(kerningPairs[i]);
+            }
+        }
+        return pairs;
+    }
+
+    #getValidFont = (fonts: string[]): string => {
+        let font = '';
+        for (let i = 0; i < fonts.length; i++) {
+            if (this.check(fonts[i])) {
+                font = fonts[i];
+                break;
+            }
+        }
+        return font;
+    }
+
+    #makeGlyphs = () => {
+        const tasks = this.tasks;
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            const chars = task.chars;
+            const count = chars.length;
+
+            for (let j = 0; j < count; j++) {
+                const char = chars[j];
+                let glyp = this.scene.make.text({ text: char, style: task.style }, false);
+                task.glyphs.push(glyp);
+            }
+        }
+    }
+
+    #makeTexture = async () => {
+        this.currentTexture = await makeTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
+        this.#setProgress(0.25);
+        this.#step(null);
+    }
+
+    #makeXMLs = async () => {
+        this.currentXMLs = makeXMLs(this.tasks);
+        this.#setProgress(0.25);
+        this.#step(null);
+    }
+
+    #setProgress = (n: number) => {
+        this.#progress += n;
+        this.#onProgress(Math.round(this.#progress * 100) / 100);
+
+    }
+
+    #step = (task: Task) => {
+        this.currentPendingSteps -= 1;
+        if (this.currentPendingSteps == 0) {
+            this.#finish();
+        }
+    }
+
+
 
 
 }
