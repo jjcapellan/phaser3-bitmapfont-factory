@@ -112,7 +112,6 @@ export default class BMFFactory {
 
         task.style.fontFamily = task.fontFamily;
 
-
         this.tasks.push(task);
     }// End make()
 
@@ -223,8 +222,6 @@ export default class BMFFactory {
         this.onComplete();
     }
 
-
-
     #getKerningPairs = (task: Task): string[] => {
         const pairs = [];
         for (let i = 0; i < kerningPairs.length; i++) {
@@ -278,8 +275,5 @@ export default class BMFFactory {
             this.#finish();
         }
     }
-
-
-
 
 }
