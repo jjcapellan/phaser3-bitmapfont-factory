@@ -1,6 +1,6 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
-import { makeAllTexture, makeTexture } from './maketexture.js';
-import { makeAllXML, makeXML } from './makexml';
+import { makeAllTexture } from './maketexture.js';
+import { makeAllXML } from './makexml';
 import { Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
@@ -8,7 +8,6 @@ export default class BMFFactory {
 
     currentPendingSteps: number;
     currentTexture: Phaser.Textures.Texture;
-    currentXML: Document;
     currentAllXML: Document[];
     maxTextureSize: number;
     onComplete: () => void;
@@ -43,7 +42,6 @@ export default class BMFFactory {
         this.onComplete = onComplete;
         this.tasks = [];
         this.maxTextureSize = 2048;
-        this.currentXML = null;
         this.currentTexture = null;
         this.currentPendingSteps = 0;
     }
@@ -62,37 +60,6 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    exec() {
-        if (this.#totalTasks == 0) {
-            this.#totalTasks = this.tasks.length;
-        }
-
-        const task = this.tasks.pop();
-        if (task == undefined) {
-            this.#totalTasks = 0;
-            this.#progress = 0;
-            this.onComplete();
-            return;
-        }
-
-        // Make glyphs
-        this.#makeGlyphs(task);
-        this.#setProgress(0.25);
-
-        // Set texture dimensions
-        this.#setDimensions(task);
-
-        // Calc kernings
-        if (task.getKernings) {
-            this.#calcKernings(task);
-        }
-        this.#setProgress(0.25);
-
-        this.currentPendingSteps = 2;
-        this.#makeTexture(task); // async
-        this.#makeXML(task);
-    }
-
     execPacked() {
 
         // Make glyphs
@@ -162,33 +129,6 @@ export default class BMFFactory {
         this.#onProgress = callback;
     }
 
-    #calcKernings = (task: Task) => {
-        const kernings = task.kernings;
-        const chars = task.chars;
-        const widths = task.fontWidths;
-        const pairs = this.#getKerningPairs(task);
-
-        for (let i = 0; i < pairs.length; i++) {
-
-            const pair = pairs[i].split('');
-
-            const w1 = widths[chars.indexOf(pair[0])] + widths[chars.indexOf(pair[1])];
-
-            const pairGlyph = this.scene.make.text({ text: pairs[i], style: task.style }, false);
-
-            const w2 = pairGlyph.width;
-
-            const offset = w2 - w1;
-
-            if (offset != 0) {
-                kernings.push({ first: pairs[i].charCodeAt(0), second: pairs[i].charCodeAt(1), amount: offset });
-            }
-
-            pairGlyph.destroy();
-        }
-
-    }
-
     #calcAllKernings = () => {
         const tasks = this.tasks;
 
@@ -234,18 +174,6 @@ export default class BMFFactory {
         return n;
     }
 
-    #finish = (key: string) => {
-        const texture = this.currentTexture;
-        const xml = this.currentXML;
-        const frame = this.scene.textures.getFrame(key);
-        const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
-
-        this.scene.cache.bitmapFont.add(key, { data: fontData, texture: key, frame: null });
-
-        // Executes next task
-        this.exec();
-    }
-
     #finishPacked = () => {
         const texture = this.currentTexture;
         const xmls = this.currentAllXML;
@@ -288,17 +216,6 @@ export default class BMFFactory {
         return font;
     }
 
-    #makeGlyphs = (task: Task) => {
-        const chars = task.chars;
-        const count = chars.length;
-
-        for (let i = 0; i < count; i++) {
-            const char = chars[i];
-            let glyp = this.scene.make.text({ text: char, style: task.style }, false);
-            task.glyphs.push(glyp);
-        }
-    }
-
     #makeAllGlyphs = () => {
         const tasks = this.tasks;
         for (let i = 0; i < tasks.length; i++) {
@@ -314,22 +231,10 @@ export default class BMFFactory {
         }
     }
 
-    #makeTexture = async (task: Task) => {
-        this.currentTexture = await makeTexture(this.scene, task);
-        this.#setProgress(0.25);
-        this.#step(task);
-    }
-
     #makeAllTexture = async () => {
         this.currentTexture = await makeAllTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
         this.#setAllProgress(0.25);
         this.#step(null);
-    }
-
-    #makeXML = (task: Task) => {
-        this.currentXML = makeXML(task);
-        this.#setProgress(0.25);
-        this.#step(task);
     }
 
     #makeAllXML = async () => {
@@ -344,56 +249,11 @@ export default class BMFFactory {
 
     }
 
-    #setProgress = (current: number) => {
-        this.#progress += (current * 1) / this.#totalTasks;
-        this.#onProgress(Math.round(this.#progress * 100) / 100);
-    }
-
     #step = (task: Task) => {
         this.currentPendingSteps -= 1;
         if (this.currentPendingSteps == 0) {
-            if (task) {
-                this.#finish(task.key);
-            } else {
-                this.#finishPacked();
-            }
+            this.#finishPacked();
         }
-    }
-
-    #setDimensions = (task: Task) => {
-        const glyphs = task.glyphs;
-        const count = glyphs.length;
-        let maxCharWidth = 0;
-        let textureWidth = 0;
-        let textureHeight = 0;
-
-        // Gets char widths
-        for (let i = 0; i < count; i++) {
-            let width = glyphs[i].getBounds().width;
-            task.fontWidths.push(width);
-            textureWidth += width;
-            if (width > maxCharWidth) {
-                maxCharWidth = width;
-            }
-        }
-
-        // Chars height
-        task.fontHeight = glyphs[0].getBounds().height;
-        textureHeight = task.fontHeight;
-
-        // Apply size limits
-        if (textureWidth > this.maxTextureSize) {
-            textureHeight *= Math.ceil(textureWidth / this.maxTextureSize);
-            textureWidth = this.maxTextureSize;
-        }
-
-        // Snaps to power of two
-        textureWidth = this.#ceilPowerOfTwo(textureWidth);
-        textureHeight = this.#ceilPowerOfTwo(textureHeight);
-
-        task.textureWidth = textureWidth;
-        task.textureHeight = textureHeight;
-
     }
 
     #setAllDimensions = () => {

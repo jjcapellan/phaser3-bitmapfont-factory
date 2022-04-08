@@ -1,47 +1,6 @@
 import CanvasSnapshot from "../node_modules/phaser/src/renderer/snapshot/CanvasSnapshot.js"
 import { Task } from "./types";
 
-async function makeTexture(scene: Phaser.Scene, task: Task): Promise<Phaser.Textures.Texture> {
-
-    const fontHeight = task.fontHeight;
-    const glyphs = task.glyphs;
-    const key = task.key;
-    const rtHeight = task.textureHeight;
-    const rtWidth = task.textureWidth;
-    const widths = task.fontWidths;
-
-    const rt = scene.make.renderTexture({ x: 0, y: 0, width: rtWidth, height: rtHeight, }, false);
-    rt.setOrigin(0);
-
-
-    let xPos = 0;
-    let yPos = 0;
-    for (let i = 0; i < glyphs.length; i++) {
-        rt.draw(glyphs[i], xPos, yPos);
-        xPos += widths[i];
-        if (xPos > rtWidth) {
-            xPos = 0;
-            yPos += fontHeight;
-        }
-    }
-
-    // Converts renderTexture to Phaser.texture
-    // (Using a renderTexture.saveTexture() in next steps produces an inverted text) 
-    function rtToTexture(): Promise<Phaser.Textures.Texture> {
-        return new Promise(resolve => {
-            rtSnapshot(rt, scene.renderer,
-                (img: any) => {
-                    scene.textures.addImage(key, img);
-                    let texture = scene.textures.get(key);
-                    rt.destroy();
-                    resolve(texture);
-                });
-        })
-    }
-
-    return rtToTexture();
-}
-
 async function makeAllTexture(scene: Phaser.Scene, tasks: Task[], width: number, height: number): Promise<Phaser.Textures.Texture> {
 
     const key = tasks[0].key;
@@ -155,4 +114,4 @@ function rtSnapshotCanvas(
     return renderer;
 }
 
-export { makeTexture, makeAllTexture }
+export { makeAllTexture }
