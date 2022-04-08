@@ -6,13 +6,13 @@ import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptex
 
 export default class BMFFactory {
 
-    currentPendingSteps: number;
-    currentTexture: Phaser.Textures.Texture;
-    currentXMLs: Document[];
-    maxTextureSize: number;
-    onComplete: () => void;
+    currentPendingSteps: number = 0;
+    currentTexture: Phaser.Textures.Texture = null;
+    currentXMLs: Document[] = [];
+    maxTextureSize: number = 2048;
+    onComplete: (n: number) => void = (n: number)=>{};
     scene: Phaser.Scene;
-    tasks: Task[];
+    tasks: Task[] = [];
 
     // Common and browser default fonts grouped in arrays by type, to use with make() method.
     defaultFonts = {
@@ -33,10 +33,6 @@ export default class BMFFactory {
     constructor(scene: Phaser.Scene, onComplete: () => void) {
         this.scene = scene;
         this.onComplete = onComplete;
-        this.tasks = [];
-        this.maxTextureSize = 2048;
-        this.currentTexture = null;
-        this.currentPendingSteps = 0;
     }
 
     /**
