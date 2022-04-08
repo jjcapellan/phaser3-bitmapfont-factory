@@ -410,13 +410,10 @@ export default class BMFFactory {
             const task = tasks[i];
             const glyphs = task.glyphs;
             const gBounds = task.glyphsBounds;
+            let glyphHeight = glyphs[0].height;
 
-            if (glyphs[0].height > rowHeight) {
-                rowHeight = glyphs[0].height;
-            }
-
-            if (rowHeight > textureHeight) {
-                textureHeight = rowHeight;
+            if (glyphHeight > rowHeight) {
+                rowHeight = glyphHeight;
             }
 
             for (let j = 0; j < glyphs.length; j++) {
@@ -427,8 +424,7 @@ export default class BMFFactory {
                     textureWidth = this.maxTextureSize;
                     rowWidth = glyph.width;
                     y += rowHeight;
-                    rowHeight = glyph.height;
-                    textureHeight += rowHeight;
+                    rowHeight = glyphHeight;
                     x = 0;
                 }
 
@@ -436,7 +432,8 @@ export default class BMFFactory {
                     textureWidth = rowWidth;
                 }
 
-                gBounds[j] = { x: x, y: y, w: glyph.width, h: rowHeight };
+                gBounds[j] = { x: x, y: y, w: glyph.width, h: glyph.height };
+                textureHeight = y + glyph.height;
                 x += glyph.width;
             } // end for
         }// end for
