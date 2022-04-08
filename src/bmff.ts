@@ -26,8 +26,6 @@ export default class BMFFactory {
 
 
     #onProgress: (progress: number) => void = (n) => { };
-    // Number of tasks when exec() is called first time.
-    #totalTasks: number = 0;
     // Number between 0 and 1. Progress of current task queue.
     #progress: number = 0;
 
@@ -233,7 +231,6 @@ export default class BMFFactory {
             this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
-        this.#totalTasks = 0;
         this.#progress = 0;
         this.onComplete();
     }
