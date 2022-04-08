@@ -340,7 +340,6 @@ export default class BMFFactory {
 
     #setAllProgress = (n: number) => {
         this.#progress += n;
-        console.log(this.#progress);
         this.#onProgress(Math.round(this.#progress * 100) / 100);
 
     }
