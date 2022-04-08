@@ -9,7 +9,7 @@ export default class BMFFactory {
     currentPendingSteps: number;
     currentTexture: Phaser.Textures.Texture;
     currentXML: Document;
-    currentXMLArr: Document[];
+    currentAllXML: Document[];
     maxTextureSize: number;
     onComplete: () => void;
     scene: Phaser.Scene;
@@ -248,7 +248,7 @@ export default class BMFFactory {
 
     #finishPacked = () => {
         const texture = this.currentTexture;
-        const xmls = this.currentXMLArr;
+        const xmls = this.currentAllXML;
         const textureKey = this.tasks[0].key;
 
         for (let i = 0; i < xmls.length; i++) {
@@ -333,7 +333,7 @@ export default class BMFFactory {
     }
 
     #makeAllXML = async () => {
-        this.currentXMLArr = makeAllXML(this.tasks);
+        this.currentAllXML = makeAllXML(this.tasks);
         this.#setAllProgress(0.25);
         this.#step(null);
     }
