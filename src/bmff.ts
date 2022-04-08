@@ -24,11 +24,6 @@ export default class BMFFactory {
     #textureWidth: number = 0;
     #textureHeight: number = 0;
 
-
-    #onProgress: (progress: number) => void = (n) => { };
-    // Number between 0 and 1. Progress of current task queue.
-    #progress: number = 0;
-
     /**
      * Creates an instance of the class BMFFactory. This class allows you to create a bitmapFont
      * from one of the fonts loaded in the browser, and add it to the Phaser cache of bitmapFonts.
@@ -62,14 +57,12 @@ export default class BMFFactory {
 
         // Make glyphs
         this.#makeGlyphs();
-        this.#setProgress(0.25);
 
         // Set texture dimensions
         this.#calcBounds();
 
         // Calc kernings
         this.#calcKernings();
-        this.#setProgress(0.25);
 
         this.currentPendingSteps = 2;
         this.#makeTexture(); // async
@@ -122,10 +115,6 @@ export default class BMFFactory {
 
         this.tasks.push(task);
     }// End make()
-
-    setOnProgress(callback: (progress: number) => void) {
-        this.#onProgress = callback;
-    }
 
     #calcBounds = () => {
         const tasks = this.tasks;
@@ -231,7 +220,6 @@ export default class BMFFactory {
             this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
-        this.#progress = 0;
         this.onComplete();
     }
 
@@ -276,20 +264,12 @@ export default class BMFFactory {
 
     #makeTexture = async () => {
         this.currentTexture = await makeTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
-        this.#setProgress(0.25);
         this.#step(null);
     }
 
     #makeXMLs = async () => {
         this.currentXMLs = makeXMLs(this.tasks);
-        this.#setProgress(0.25);
         this.#step(null);
-    }
-
-    #setProgress = (n: number) => {
-        this.#progress += n;
-        this.#onProgress(Math.round(this.#progress * 100) / 100);
-
     }
 
     #step = (task: Task) => {
