@@ -10,7 +10,7 @@ export default class BMFFactory {
     currentTexture: Phaser.Textures.Texture = null;
     currentXMLs: Document[] = [];
     maxTextureSize: number = 2048;
-    onComplete: (n: number) => void = (n: number)=>{};
+    onComplete: () => void = ()=>{};
     scene: Phaser.Scene;
     tasks: Task[] = [];
 
