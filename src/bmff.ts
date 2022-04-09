@@ -214,6 +214,10 @@ export default class BMFFactory {
             this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
+        this.currentTexture = null;
+        this.currentXMLs = [];
+        this.tasks = [];
+
         this.onComplete();
     }
 
