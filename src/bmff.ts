@@ -206,15 +206,6 @@ export default class BMFFactory {
 
     }
 
-    #ceilPowerOfTwo = (n: number): number => {
-        // Checks power of two (in binary is 1[...0], so 10000 ^ 10001 == 1)
-        if ((n ^ (n + 1)) != 1) {
-            // 10011 << 1 ; 100110 & (1 << 5) ; 100000 (upper power of two)
-            n = (n << 1) & (1 << (n.toString(2).length));
-        }
-        return n;
-    }
-
     #finish = () => {
         const texture = this.currentTexture;
         const xmls = this.currentXMLs;
