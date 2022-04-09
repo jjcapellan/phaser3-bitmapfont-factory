@@ -1,7 +1,7 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXMLs } from './makexml';
-import { Task } from './types';
+import { Options, Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
 export default class BMFFactory {
@@ -11,6 +11,7 @@ export default class BMFFactory {
     currentXMLs: Document[] = [];
     maxTextureSize: number = 2048;
     onComplete: () => void = () => { };
+    PoT: boolean = false;
     scene: Phaser.Scene;
     tasks: Task[] = [];
 
@@ -33,10 +34,14 @@ export default class BMFFactory {
      * from one of the fonts loaded in the browser, and add it to the Phaser cache of bitmapFonts.
      * @param scene A reference to the Phaser.Scene
      * @param onComplete Function that will be called when all tasks are completed.
+     * @param [options]
+     * @param [options.PoT = false] The size of generated texture will be power of two?. 
      */
-    constructor(scene: Phaser.Scene, onComplete: () => void) {
+    constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false }) {
         this.scene = scene;
+        this.PoT = options.PoT;
         this.onComplete = onComplete;
+
     }
 
     /**
@@ -53,8 +58,8 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    exec() {    
-        
+    exec() {
+
         this.#totalGlyphs = 0;
         this.#totalHeight = 0;
         this.#totalWidth = 0;
@@ -157,10 +162,12 @@ export default class BMFFactory {
             } // end for
         }// end for
 
+        if (this.PoT) {
+            textureHeight = Phaser.Math.Pow2.GetNext(textureHeight);
+        }
+
         this.#textureWidth = textureWidth;
         this.#textureHeight = textureHeight;
-        console.log(textureWidth, textureHeight);
-
     }
 
     #calcKernings = () => {
@@ -240,6 +247,11 @@ export default class BMFFactory {
         const avgWidth = totalWidth / totalGlyphs;
         const surface = avgWidth * avgHeight * totalGlyphs; // px^2
         let textureWidth = Math.ceil(Math.sqrt(surface));
+
+        if (this.PoT) {
+            textureWidth = Phaser.Math.Pow2.GetNext(textureWidth);
+        }
+
         return textureWidth;
     }
 

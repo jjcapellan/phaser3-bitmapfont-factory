@@ -4,6 +4,11 @@ type Kerning = {
     amount: number
 }
 
+type Options = {
+    // The size of the generated texture will be power of two?
+    PoT: boolean
+}
+
 type Task = {
     chars: string,
     fontFamily: string,
@@ -19,4 +24,4 @@ type Task = {
     textureWidth: number
 }
 
-export { Task }
+export { Options, Task }
