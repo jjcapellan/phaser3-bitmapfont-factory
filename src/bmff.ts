@@ -107,16 +107,12 @@ export default class BMFFactory {
         const task: Task = {
             chars: chars,
             fontFamily: _fontFamily,
-            fontHeight: 0,
-            fontWidths: [],
             glyphs: [],
             glyphsBounds: [],
             getKernings: getKernings,
             kernings: [],
             key: key,
-            style: style,
-            textureHeight: 0,
-            textureWidth: 0
+            style: style
         }
 
         task.style.fontFamily = task.fontFamily;
