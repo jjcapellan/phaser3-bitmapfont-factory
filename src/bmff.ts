@@ -6,13 +6,8 @@ import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptex
 
 export default class BMFFactory {
 
-    currentPendingSteps: number = 0;
-    currentTexture: Phaser.Textures.Texture = null;
-    currentXMLs: Document[] = [];
-    onComplete: () => void = () => { };
     PoT: boolean = false;
     scene: Phaser.Scene;
-    tasks: Task[] = [];
 
     // Common and browser default fonts grouped in arrays by type, to use with make() method.
     defaultFonts = {
@@ -21,9 +16,13 @@ export default class BMFFactory {
         monospace: monospace
     }
 
+    #currentPendingSteps: number = 0;
+    #currentTexture: Phaser.Textures.Texture = null;
+    #currentXMLs: Document[] = [];
+    #onComplete: () => void = () => { };
+    #tasks: Task[] = [];
     #textureWidth: number = 0;
     #textureHeight: number = 0;
-
     #totalGlyphs: number = 0;
     #totalHeight: number = 0;
     #totalWidth: number = 0;
@@ -34,12 +33,12 @@ export default class BMFFactory {
      * @param scene A reference to the Phaser.Scene
      * @param onComplete Function that will be called when all tasks are completed.
      * @param [options]
-     * @param [options.PoT = false] The size of generated texture will be power of two?. 
+     * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false. 
      */
     constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false }) {
         this.scene = scene;
         this.PoT = options.PoT;
-        this.onComplete = onComplete;
+        this.#onComplete = onComplete;
 
     }
 
@@ -72,7 +71,7 @@ export default class BMFFactory {
         // Calc kernings
         this.#calcKernings();
 
-        this.currentPendingSteps = 2;
+        this.#currentPendingSteps = 2;
         this.#makeTexture(); // async
         this.#makeXMLs();
     }
@@ -116,11 +115,11 @@ export default class BMFFactory {
 
         task.style.fontFamily = task.fontFamily;
 
-        this.tasks.push(task);
+        this.#tasks.push(task);
     }// End make()
 
     #calcBounds = () => {
-        const tasks = this.tasks;
+        const tasks = this.#tasks;
         let textureWidth = 0;
         let textureHeight = 0;
         let rowHeight = 0;
@@ -166,7 +165,7 @@ export default class BMFFactory {
     }
 
     #calcKernings = () => {
-        const tasks = this.tasks;
+        const tasks = this.#tasks;
 
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
@@ -202,23 +201,23 @@ export default class BMFFactory {
     }
 
     #finish = () => {
-        const texture = this.currentTexture;
-        const xmls = this.currentXMLs;
-        const textureKey = this.tasks[0].key;
+        const texture = this.#currentTexture;
+        const xmls = this.#currentXMLs;
+        const textureKey = this.#tasks[0].key;
 
         for (let i = 0; i < xmls.length; i++) {
             const xml = xmls[i];
             const frame = this.scene.textures.getFrame(textureKey);
             const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
 
-            this.scene.cache.bitmapFont.add(this.tasks[i].key, { data: fontData, texture: textureKey, frame: null });
+            this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
-        this.currentTexture = null;
-        this.currentXMLs = [];
-        this.tasks = [];
+        this.#currentTexture = null;
+        this.#currentXMLs = [];
+        this.#tasks = [];
 
-        this.onComplete();
+        this.#onComplete();
     }
 
     #getKerningPairs = (task: Task): string[] => {
@@ -257,7 +256,7 @@ export default class BMFFactory {
     }
 
     #makeGlyphs = () => {
-        const tasks = this.tasks;
+        const tasks = this.#tasks;
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
             const chars = task.chars;
@@ -269,7 +268,7 @@ export default class BMFFactory {
                 const char = chars[j];
                 let glyp = this.scene.make.text({ text: char, style: task.style }, false);
                 task.glyphs.push(glyp);
-                // Used to calc of texture size
+                // Used to calc texture size
                 this.#totalHeight += glyp.height;
                 this.#totalWidth += glyp.width;
             }
@@ -277,18 +276,18 @@ export default class BMFFactory {
     }
 
     #makeTexture = async () => {
-        this.currentTexture = await makeTexture(this.scene, this.tasks, this.#textureWidth, this.#textureHeight);
+        this.#currentTexture = await makeTexture(this.scene, this.#tasks, this.#textureWidth, this.#textureHeight);
         this.#step(null);
     }
 
     #makeXMLs = async () => {
-        this.currentXMLs = makeXMLs(this.tasks);
+        this.#currentXMLs = makeXMLs(this.#tasks);
         this.#step(null);
     }
 
     #step = (task: Task) => {
-        this.currentPendingSteps -= 1;
-        if (this.currentPendingSteps == 0) {
+        this.#currentPendingSteps -= 1;
+        if (this.#currentPendingSteps == 0) {
             this.#finish();
         }
     }
