@@ -10,7 +10,7 @@ export default class BMFFactory {
     currentTexture: Phaser.Textures.Texture = null;
     currentXMLs: Document[] = [];
     maxTextureSize: number = 2048;
-    onComplete: () => void = ()=>{};
+    onComplete: () => void = () => { };
     scene: Phaser.Scene;
     tasks: Task[] = [];
 
@@ -23,6 +23,10 @@ export default class BMFFactory {
 
     #textureWidth: number = 0;
     #textureHeight: number = 0;
+
+    #totalGlyphs: number = 0;
+    #totalHeight: number = 0;
+    #totalWidth: number = 0;
 
     /**
      * Creates an instance of the class BMFFactory. This class allows you to create a bitmapFont
@@ -49,7 +53,11 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    exec() {
+    exec() {    
+        
+        this.#totalGlyphs = 0;
+        this.#totalHeight = 0;
+        this.#totalWidth = 0;
 
         // Make glyphs
         this.#makeGlyphs();
@@ -120,6 +128,8 @@ export default class BMFFactory {
         let x = 0;
         let y = 0;
 
+        textureWidth = this.#getTextureWidth(this.#totalGlyphs, this.#totalHeight, this.#totalWidth);
+
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
             const glyphs = task.glyphs;
@@ -134,16 +144,11 @@ export default class BMFFactory {
                 let glyph = glyphs[j];
                 rowWidth += glyph.width;
 
-                if (rowWidth > this.maxTextureSize) {
-                    textureWidth = this.maxTextureSize;
+                if (rowWidth > textureWidth) {
                     rowWidth = glyph.width;
                     y += rowHeight;
                     rowHeight = glyphHeight;
                     x = 0;
-                }
-
-                if (rowWidth > textureWidth) {
-                    textureWidth = rowWidth;
                 }
 
                 gBounds[j] = { x: x, y: y, w: glyph.width, h: glyph.height };
@@ -154,6 +159,7 @@ export default class BMFFactory {
 
         this.#textureWidth = textureWidth;
         this.#textureHeight = textureHeight;
+        console.log(textureWidth, textureHeight);
 
     }
 
@@ -229,6 +235,14 @@ export default class BMFFactory {
         return pairs;
     }
 
+    #getTextureWidth = (totalGlyphs: number, totalHeight: number, totalWidth: number): number => {
+        const avgHeight = totalHeight / totalGlyphs;
+        const avgWidth = totalWidth / totalGlyphs;
+        const surface = avgWidth * avgHeight * totalGlyphs; // px^2
+        let textureWidth = Math.ceil(Math.sqrt(surface));
+        return textureWidth;
+    }
+
     #getValidFont = (fonts: string[]): string => {
         let font = '';
         for (let i = 0; i < fonts.length; i++) {
@@ -247,10 +261,15 @@ export default class BMFFactory {
             const chars = task.chars;
             const count = chars.length;
 
+            this.#totalGlyphs += count;
+
             for (let j = 0; j < count; j++) {
                 const char = chars[j];
                 let glyp = this.scene.make.text({ text: char, style: task.style }, false);
                 task.glyphs.push(glyp);
+                // Used to calc of texture size
+                this.#totalHeight += glyp.height;
+                this.#totalWidth += glyp.width;
             }
         }
     }
