@@ -1,8 +1,18 @@
 # Phaser3 Bitmapfont Factory
-This Phaser3 class creates bitmapfonts at runtime, using default or already loaded browser fonts.  
+This typescript class creates bitmapfonts at **runtime** ready to use in a [Phaser3](https://phaser.io) game, using default or already loaded browser fonts.  
 This class resolves two problems:
 1) You need to replace Phaser text with bitmapfonts to gain performance.
-2) You don't want to save the same bitmapfont in several sizes for each screen resolution.
+2) You don't want to save the same bitmapfont in several sizes for each screen resolution.  
+---
+## Features
+* Converts any loaded font[^1] in the browser to a bitmapfont, ready to use in Phaser3 at runtime.
+* Shares same texture for multiple bitmapfonts.
+* Ensures power of two texture size (optional).
+* Calcs kernings for 97 commonly used pairs. (optional).
+* Supports list of fallback fonts.
+* Predefined fallback font lists for sans-serif, sans, and monospace types.
+
+[^1]: Fonts with ligatures are not supported.
 
 ---
 ## Installation
@@ -48,10 +58,12 @@ let bmff = new BMFFactory(this, () => {
             // i.e.: this.scene.start('nextScene');
         });
 ```
-**BMFFactory(scene, onComplete)**  
+**BMFFactory(scene, onComplete, options)**  
 Parameters:
-* *scene*: A reference to the Phaser.Scene
-* *onComplete*: callback function executed when all tasks are completed.
+* *scene* {Phaser.Scene}: A reference to the Phaser.Scene
+* *onComplete* {Function}: callback function executed when all tasks are completed.
+* *options* {Object}: optional object to set some features.
+* *options.PoT* {Boolean}: The size of generated texture will be power of two?. Default: false.
 
 ### 2. Define the *tasks*
 ```javascript
@@ -76,11 +88,11 @@ bmff.make('key3', bmff.defaultFonts.monospace, chars, { fontSize: '64px', color:
 **make(key, fontFamily, chars, style, getKernings)**  
 The method **make** creates a task to make a bitmapfont, and adds it to the queue.  
 Parameters:
-* *key*: The key used to retrieve the created bitmapFont (i.e.: <code>this.add.bitmapText(x, y, key, 'text')</code>).
-* *fontFamily*: The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or an array of names (first valid font will be selected). Any font loaded in Phaser via WebFont can be used.
-* *chars*: String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must include the space character (" ") if you are going to use it.
-* *style*: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). FontName and FontFamily properties of this object are ignored.
-* *getKernings* (optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. By default is false.
+* *key* {String}: The key used to retrieve the created bitmapFont (i.e.: <code>this.add.bitmapText(x, y, key, 'text')</code>).
+* *fontFamily* {String}: The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or an array of names (first valid font will be selected). Any font loaded in Phaser via WebFont can be used[^1].
+* *chars* {String}: String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must include the space character (" ") if you are going to use it.
+* *style* {Object}: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). FontName and FontFamily properties of this object are ignored.
+* *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. By default is false.
 
 ### 3. Execute the tasks
 ```javascript
@@ -88,7 +100,10 @@ Parameters:
 bmff.exec();
 ```
 **exec()**  
-This method executes all tasks in the tasks queue.  
+This asynchronous method executes all tasks previously added to the task queue. When finished, it calls *onComplete* callback.  
+  
+  
+
 
 ---
 ## License
