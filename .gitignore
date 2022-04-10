@@ -33,6 +33,6 @@ package-lock.json
 *.code-workspace
 
 # Others
-demo/
+#demo/
 devbuild/
-index.html
+#index.html
