@@ -24,7 +24,7 @@ There are two alternatives:
 ```  
 * Point a script tag to the CDN link:
 ```html
-<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.0.0/dist/scrollcam.umd.js"></script>
+<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.0.0/dist/bmff.umd.js"></script>
 ```  
 **Important**: the class is exposed as **BMFFactory**
 ### From NPM
@@ -34,14 +34,14 @@ npm i phaser3-bitmapfont-factory
 Then you can acces the class as:
 * CommonJS module:
 ```javascript
-const BMFFactory = require('phaser3-bitmapfont-factory').default;
+const BMFFactory = require('phaser3-bitmapfont-factory/dist/bmff');
 
 // In scene.create function
 const bmff = new BMFFactory(this, onComplete);
 ```
 * ES6 module:
 ```javascript
-import BMFFactory from 'phaser3-bitmapfont-factory';
+import BMFFactory from 'phaser3-bitmapfont-factory/dist/bmff.ems';
 
 // In scene.create function
 const bmff = new BMFFactory(this, onComplete);
@@ -73,10 +73,10 @@ Parameters:
 const chars = ' 0123456789abcdefghijklmnopqrstuwxyz,.';
 
 // This adds as task the creation of a bitmapfont using "Arial" font family and calculating its kernings
-bmff.make('key1', 'Arial', chars, { fontSize: '64px', color: '#555568' }, true);
+bmff.make('key1', 'Arial', chars, { fontSize: '64px', color: '#555568' });
 
 // We can use fallback fonts like in css
-bmff.make('key2', ['Lato', 'Lucida Grande', 'Tahoma', 'Sans-Serif'], chars, { fontSize: '64px', color: '#555568' }, true);
+bmff.make('key2', ['Lato', 'Lucida Grande', 'Tahoma', 'Sans-Serif'], chars, { fontSize: '64px', color: '#555568' });
 
 // BMFFactory has three predefined arrays of common web-safe and browser default fonts:
 // bmff.defaultFonts.sansSerif
@@ -92,7 +92,7 @@ Parameters:
 * *fontFamily* {String}: The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or an array of names (first valid font will be selected). Any font loaded in Phaser via WebFont can be used[^1].
 * *chars* {String}: String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must include the space character (" ") if you are going to use it.
 * *style* {Object}: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). FontName and FontFamily properties of this object are ignored.
-* *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. By default is false.
+* *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. By default is true.
 
 ### 3. Execute the tasks
 ```javascript
