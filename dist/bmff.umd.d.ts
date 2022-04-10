@@ -39,7 +39,7 @@ export default class BMFFactory {
      * include the space character (" ") if you are going to use it.
      * @param style The text style configuration object (the same as the one used in Phaser.GameObjects.Text).
      * FontName and FontFamily properties of this object are ignored.
-     * @param getKernings You are going to use the kernings?. Not using kernings reduces the generation time.
+     * @param [getKernings = true] You are going to use the kernings?. Not using kernings reduces the generation time.
      */
-    make(key: string, fontFamily: string | string[], chars: string, style: Phaser.Types.GameObjects.Text.TextStyle, getKernings: boolean): void;
+    make(key: string, fontFamily: string | string[], chars: string, style?: Phaser.Types.GameObjects.Text.TextStyle, getKernings?: boolean): void;
 }
