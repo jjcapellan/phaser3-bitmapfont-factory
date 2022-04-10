@@ -18,6 +18,7 @@
     "bitmapFont",
     "font",
     "text",
+    "runtime",
     "converter"
   ],
   "repository": {
