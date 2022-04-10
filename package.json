@@ -9,7 +9,8 @@
   "types": "dist/bmff.d.ts",
   "scripts": {
     "build:dev": "microbundle -f umd --name BMFFactory -o devbuild --no-generateTypes",
-    "build:dist": "microbundle -f cjs,umd,es --name BMFFactory --sourcemap false",
+    "build:dist": "microbundle -f cjs,umd,es --name BMFFactory --sourcemap false && npm run copytypes",
+    "copytypes": "cpy 'dist/bmff.d.ts' . --rename='bmff.ems.d.ts' && cpy 'dist/bmff.d.ts' . --rename='bmff.umd.d.ts'",
     "dev": "microbundle watch -f umd --name BMFFactory"
   },
   "keywords": [
@@ -26,6 +27,7 @@
   "author": "Juan Jose Capellan",
   "license": "MIT",
   "devDependencies": {
+    "cpy-cli": "^4.1.0",
     "microbundle": "^0.14.2",
     "phaser": "^3.55.2"
   }
