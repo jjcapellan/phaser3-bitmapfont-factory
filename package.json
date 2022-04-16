@@ -8,7 +8,7 @@
   "source": "src/bmff.ts",
   "types": "dist/bmff.d.ts",
   "scripts": {
-    "build:dev": "microbundle -f umd --name BMFFactory -o devbuild --no-generateTypes",
+    "build:dev": "microbundle -f umd --name BMFFactory -o demo/devbuild --no-generateTypes",
     "build:dist": "microbundle -f cjs,umd,es --name BMFFactory --sourcemap false && npm run copytypes",
     "copytypes": "cpy 'dist/bmff.d.ts' . --rename='bmff.ems.d.ts' && cpy 'dist/bmff.d.ts' . --rename='bmff.umd.d.ts'",
     "dev": "microbundle watch -f umd --name BMFFactory"
