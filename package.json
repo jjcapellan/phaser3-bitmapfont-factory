@@ -31,5 +31,8 @@
     "cpy-cli": "^4.1.0",
     "microbundle": "^0.14.2",
     "phaser": "^3.55.2"
+  },
+  "dependencies": {
+    "microidb": "^0.1.0"
   }
 }
