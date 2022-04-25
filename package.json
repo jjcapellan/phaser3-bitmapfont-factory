@@ -8,10 +8,13 @@
   "source": "src/bmff.ts",
   "types": "dist/bmff.d.ts",
   "scripts": {
-    "build:dev": "microbundle -f umd --name BMFFactory -o demo/devbuild --no-generateTypes",
-    "build:dist": "microbundle -f cjs,umd,es --name BMFFactory --sourcemap false && npm run copytypes",
+    "build:dev": "microbundle -f umd --name BMFFactory -o demo/devbuild --no-generateTypes --external none",
+    "build:dist": "npm run build:cjs && npm run build:es && npm run build:web && npm run copytypes",
+    "build:cjs": "microbundle -f cjs --sourcemap false",
+    "build:es": "microbundle -f es --sourcemap false",
+    "build:web": "microbundle -f umd --name BMFFactory --sourcemap false --no-generateTypes --external none",
     "copytypes": "cpy 'dist/bmff.d.ts' . --rename='bmff.ems.d.ts' && cpy 'dist/bmff.d.ts' . --rename='bmff.umd.d.ts'",
-    "dev": "microbundle watch -f umd --name BMFFactory"
+    "dev": "microbundle watch -f umd --name BMFFactory --external none"
   },
   "keywords": [
     "Phaser3",
@@ -31,8 +34,5 @@
     "cpy-cli": "^4.1.0",
     "microbundle": "^0.14.2",
     "phaser": "^3.55.2"
-  },
-  "dependencies": {
-    "microidb": "^0.1.0"
   }
 }
