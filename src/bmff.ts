@@ -36,9 +36,9 @@ export default class BMFFactory {
      * @param onComplete Function that will be called when all tasks are completed.
      * @param [options]
      * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false. 
-     * @param [options.onProgress] Function that will be called two times per font. Receives a number between 
-     * 0 and 1 (total progress). This option stops font generation for 1 frame each time the function is called 
-     * to allow drawing on screen (i.e.: a progress bar).
+     * @param [options.onProgress] Callback function executed two times per font. Receives a number between 
+     * 0 and 1 (total progress). This option will be necessary if you want to draw something on the screen 
+     * during the generation process, since it uses the Phaser rendering context.
      */
     constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false }) {
         this.scene = scene;
