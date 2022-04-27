@@ -1,3 +1,26 @@
+# v1.1.0
+Bitmapfont generation can take some time if there are many glyphs, especially on low end hardware. On the other hand, the generation process uses the Phaser rendering context, so is not possible draw on screen during the process.  
+The two previous circumstances together are not desirable, so in this version I have implemented an optional callback (onProgress) that allows us to draw on screen during the generation process. This way we could for example display a progress bar.  
+## New features
+* **onProgress: (progress: number) => void** : optional callback function executed two times per font. Receives a number between 0 and 1 (total progress).  
+Example:
+```javascript
+// In scene.create function
+let txt = this.add.text(400, 300, 'Progress 0%');
+
+const onComplete = () => { /* onComplete code */ };
+
+const options = {
+    onComplete: (p) => {
+        txt.setText( 'Progress ' + Math.ceil(p * 100) + '%');
+    }
+}
+
+const bmff = new BMFFactory(this, onComplete, options);
+```
+
+---  
+
 # v1.0.0
 First stable version.
 ## Features

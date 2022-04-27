@@ -79,6 +79,7 @@ Parameters:
 * *onComplete* {Function}: callback function executed when all tasks are completed.
 * *options* {Object}: optional object to set some features.
 * *options.PoT* {Boolean}: The size of generated texture will be power of two?. Default: false.
+* *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). This option will be necessary if you want to draw something on the screen during the generation process, since it uses the Phaser rendering context. Each call to this function stops the generation for 1 frame.Default: undefined.
 
 ### 2. Define the *tasks*
 ```javascript
@@ -138,6 +139,8 @@ class MyGame extends Phaser.Scene {
         this.counterBMF = null;
         this.count = 0;
 
+        const options = { onProgress: (progress) => { console.log(progress) }; }
+
         // Creates a new BMFFactory object
         const bmff = BMFFactory(this, 
         ()=> {
@@ -145,7 +148,9 @@ class MyGame extends Phaser.Scene {
             this.counterBMF = this.add.bitmapText(400,300,'countFont','0', 120)
                 .setOrigin(0.5);
             this.fontReady = true;
-        });
+        },
+        // Optional parameter. Contains the callback onProgress (really wouldn't be necessary for so few glyphs). 
+        options);
 
         // Adds a task to make a bitmapfont using the firs available monospace in the browser and 
         // generating only glyphs for numbers. In this case, we don't need kernings. The generated
