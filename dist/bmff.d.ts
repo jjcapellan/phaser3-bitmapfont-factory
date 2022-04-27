@@ -1,6 +1,7 @@
 import { Options } from './types';
 export default class BMFFactory {
     #private;
+    onProgress: (n: number) => void;
     PoT: boolean;
     scene: Phaser.Scene;
     defaultFonts: {
@@ -15,6 +16,9 @@ export default class BMFFactory {
      * @param onComplete Function that will be called when all tasks are completed.
      * @param [options]
      * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false.
+     * @param [options.onProgress] Callback function executed two times per font. Receives a number between
+     * 0 and 1 (total progress). This option will be necessary if you want to draw something on the screen
+     * during the generation process, since it uses the Phaser rendering context.
      */
     constructor(scene: Phaser.Scene, onComplete: () => void, options?: Options);
     /**
@@ -28,7 +32,7 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    exec(): void;
+    exec(): Promise<void>;
     /**
      * Creates a task to make a bitmapfont, and adds it to the queue. The commands will not be executed
      * until we call the exec() function.

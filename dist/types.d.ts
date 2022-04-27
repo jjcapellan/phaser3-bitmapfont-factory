@@ -5,6 +5,7 @@ declare type Kerning = {
 };
 declare type Options = {
     PoT: boolean;
+    onProgress?: (progress: number) => void;
 };
 declare type Task = {
     chars: string;
