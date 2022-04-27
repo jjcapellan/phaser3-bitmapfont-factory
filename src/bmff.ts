@@ -6,6 +6,7 @@ import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptex
 
 export default class BMFFactory {
 
+    onProgress: (n: number) => void;
     PoT: boolean = false;
     scene: Phaser.Scene;
 
@@ -25,6 +26,7 @@ export default class BMFFactory {
     #textureHeight: number = 0;
     #totalGlyphs: number = 0;
     #totalHeight: number = 0;
+    #totalProgress: number = 0;
     #totalWidth: number = 0;
 
     /**
@@ -34,10 +36,14 @@ export default class BMFFactory {
      * @param onComplete Function that will be called when all tasks are completed.
      * @param [options]
      * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false. 
+     * @param [options.onProgress] Function that will be called two times per font. Receives a number between 
+     * 0 and 1 (total progress). This option stops font generation for 1 frame each time the function is called 
+     * to allow drawing on screen (i.e.: a progress bar).
      */
     constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false }) {
         this.scene = scene;
         this.PoT = options.PoT;
+        this.onProgress = options.onProgress;
         this.#onComplete = onComplete;
 
     }
@@ -56,20 +62,20 @@ export default class BMFFactory {
      * the onComplete callback.
      * @returns void
      */
-    exec() {
+    async exec() {
 
         this.#totalGlyphs = 0;
         this.#totalHeight = 0;
         this.#totalWidth = 0;
 
         // Make glyphs
-        this.#makeGlyphs();
+        await this.#makeGlyphs();
 
         // Set texture dimensions
         this.#calcBounds();
 
         // Calc kernings
-        this.#calcKernings();
+        await this.#calcKernings();
 
         this.#currentPendingSteps = 2;
         this.#makeTexture(); // async
@@ -164,7 +170,7 @@ export default class BMFFactory {
         this.#textureHeight = textureHeight;
     }
 
-    #calcKernings = () => {
+    #calcKernings = async () => {
         const tasks = this.#tasks;
 
         for (let i = 0; i < tasks.length; i++) {
@@ -196,6 +202,15 @@ export default class BMFFactory {
 
                 pairGlyph.destroy();
             }// end for
+
+            if (this.onProgress) {
+                this.#totalProgress += (1 / 2) * (1 / this.#tasks.length);
+                let t = this;
+                await new Promise((resolve) => {
+                    t.onProgress(t.#totalProgress);
+                    t.scene.events.once('preupdate', resolve);
+                });
+            }
         }// end for
 
     }
@@ -255,7 +270,7 @@ export default class BMFFactory {
         return font;
     }
 
-    #makeGlyphs = () => {
+    #makeGlyphs = async () => {
         const tasks = this.#tasks;
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
@@ -272,6 +287,16 @@ export default class BMFFactory {
                 this.#totalHeight += glyp.height;
                 this.#totalWidth += glyp.width;
             }
+
+            if (this.onProgress) {
+                this.#totalProgress += (1 / 2) * (1 / this.#tasks.length);
+                let t = this;
+                await new Promise((resolve) => {
+                    t.onProgress(t.#totalProgress);
+                    t.scene.events.once('preupdate', resolve);
+                });
+            }
+
         }
     }
 

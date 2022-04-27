@@ -5,20 +5,23 @@ class Test extends Phaser.Scene {
 
     init(data) {
         this.duration = data.time;
+        this.totalGlyphs = data.glyphs;
+        this.totalFonts = data.fonts;
     }
 
     create() {
-        this.add.text(400, 15, 'Bitmapfonts used below were generated at runtime with BMFFactory v1.0.0', { color: '#555568' })
+        this.add.text(400, 15, 'Bitmapfonts used below were generated at runtime with BMFFactory v1.1.0', { color: '#555568' })
             .setOrigin(0.5);
-        const bmfTexture = this.textures.get('webfont').source[0];
+        const bmfTexture = this.textures.exists('webfont') ?
+            this.textures.get('webfont').source[0] : this.textures.get('sansserif').source[0];
+
         const txt = `Font loaded via WebFont`;
         const txt1 = `Sans Serif default font`;
         const txt2 = `Serif default font`;
         const txt3 = `Monospace default font`;
         const txt4 = `Kernings on: WA AY V. Av`;
         const txt5 = `Kernings off: WA AY V. Av`;
-        const txt6 = `286 glyphs were generated in ${this.duration}ms 
-        texture size ${bmfTexture.width}x${bmfTexture.height}`;
+        const txt6 = `${this.totalFonts} fonts and ${this.totalGlyphs} glyphs in ${this.duration}ms\nonProgress option uses 2 frames per font\nTexture size ${bmfTexture.width}x${bmfTexture.height}`;
 
 
         const vMargin = 80;

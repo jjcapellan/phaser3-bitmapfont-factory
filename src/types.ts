@@ -6,7 +6,8 @@ type Kerning = {
 
 type Options = {
     // The size of the generated texture will be power of two?
-    PoT: boolean
+    PoT: boolean,
+    onProgress?: (progress: number) => void
 }
 
 type Task = {
