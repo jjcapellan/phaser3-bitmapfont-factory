@@ -1,6 +1,6 @@
 {
   "name": "phaser3-bitmapfont-factory",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Creates bitmapfonts in Phaser3 at runtime, using available browser fonts",
   "main": "dist/bmff.js",
   "umd:main": "dist/bmff.umd.js",
