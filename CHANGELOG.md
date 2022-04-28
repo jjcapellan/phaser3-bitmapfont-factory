@@ -11,7 +11,7 @@ let txt = this.add.text(400, 300, 'Progress 0%');
 const onComplete = () => { /* onComplete code */ };
 
 const options = {
-    onComplete: (p) => {
+    onProgress: (p) => {
         txt.setText( 'Progress ' + Math.ceil(p * 100) + '%');
     }
 }
