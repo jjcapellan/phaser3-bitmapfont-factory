@@ -1,3 +1,10 @@
+// @ts-nocheck
+/*
+* This file supports multiple versions of Phaser with different types, so type checking is disabled.
+* Breaking changes in Phaser 3.60.x on RenderTexture. 
+* 
+*/
+
 import CanvasSnapshot from "../node_modules/phaser/src/renderer/snapshot/CanvasSnapshot.js"
 import { Task } from "./types";
 
@@ -33,6 +40,7 @@ async function makeTexture(scene: Phaser.Scene, tasks: Task[], width: number, he
                     rt.destroy();
                     resolve(texture);
                 });
+
         })
     }
 
@@ -41,7 +49,7 @@ async function makeTexture(scene: Phaser.Scene, tasks: Task[], width: number, he
 
 
 
-// Phaser limits the size of snapshot to canvas size, so this workaround is necessary
+// Phaser limits the size of snapshot to canvas size, a workaround is necessary for older Phaser versions
 
 function rtSnapshot(
     rt: Phaser.GameObjects.RenderTexture,
@@ -49,12 +57,26 @@ function rtSnapshot(
     callback: Phaser.Types.Renderer.Snapshot.SnapshotCallback
 ) {
 
-    if (rt.renderTarget) {
+    // Old Phaser versions 
+    if ('renderTarget' in rt) {
+        if (rt.texture.renderTarget || rt.renderTarget) {
+            const r = renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+            rtSnapshotWebgl(rt, r, callback);
+        } else {
+            const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
+            rtSnapshotCanvas(rt, r, callback);
+        }
+
+        return;
+    }
+
+   
+    if (rt.texture.renderTarget || rt.renderTarget) {
         const r = renderer as Phaser.Renderer.WebGL.WebGLRenderer;
-        rtSnapshotWebgl(rt, r, callback);
+        rt.snapshotArea(0, 0, rt.width, rt.height, callback);
     } else {
         const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
-        rtSnapshotCanvas(rt, r, callback);
+        rt.snapshotArea(0, 0, rt.width, rt.height, callback);
     }
 }
 
