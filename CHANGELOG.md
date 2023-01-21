@@ -1,3 +1,10 @@
+# v1.1.1
+This version adds support for Phaser 3.60.x versions. With the changes made in this version of Phaser the fonts are generated four times faster.  
+## Fixes
+* Internal function **makeTexture()** was not working due to Phaser breaking change on RenderTexture object.  
+
+---
+
 # v1.1.0
 Bitmapfont generation can take some time if there are many glyphs, especially on low end hardware. On the other hand, the generation process uses the Phaser rendering context, so is not possible draw on screen during the process.  
 The two previous circumstances together are not desirable, so in this version I have implemented an optional callback (onProgress) that allows us to draw on screen during the generation process. This way we could for example display a progress bar.  

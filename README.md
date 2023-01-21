@@ -33,13 +33,13 @@ Try demo here: https://jjcapellan.github.io/phaser3-bitmapfont-factory/
 ## Installation
 ### Browser
 There are two alternatives:
-* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.0/dist/bmff.umd.js) to your project folder and add a reference in your html:
+* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.1/dist/bmff.umd.js) to your project folder and add a reference in your html:
 ```html
 <script src = "bmff.umd.js"></script>
 ```  
 * Point a script tag to the CDN link:
 ```html
-<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.0/dist/bmff.umd.js"></script>
+<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.1/dist/bmff.umd.js"></script>
 ```  
 **Important**: the class is exposed as **BMFFactory**
 ### From NPM
