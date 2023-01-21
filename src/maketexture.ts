@@ -57,27 +57,23 @@ function rtSnapshot(
     callback: Phaser.Types.Renderer.Snapshot.SnapshotCallback
 ) {
 
-    // Old Phaser versions 
+    // Old Phaser versions < 3.60.XX
     if ('renderTarget' in rt) {
         if (rt.texture.renderTarget || rt.renderTarget) {
             const r = renderer as Phaser.Renderer.WebGL.WebGLRenderer;
             rtSnapshotWebgl(rt, r, callback);
-        } else {
-            const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
-            rtSnapshotCanvas(rt, r, callback);
+            return;
         }
-
-        return;
     }
 
-   
     if (rt.texture.renderTarget || rt.renderTarget) {
         const r = renderer as Phaser.Renderer.WebGL.WebGLRenderer;
         rt.snapshotArea(0, 0, rt.width, rt.height, callback);
-    } else {
-        const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
-        rt.snapshotArea(0, 0, rt.width, rt.height, callback);
-    }
+        return;
+    } 
+
+    const r = renderer as Phaser.Renderer.Canvas.CanvasRenderer;
+    rtSnapshotCanvas(rt, r, callback);
 }
 
 function rtSnapshotWebgl(
@@ -129,7 +125,15 @@ function rtSnapshotCanvas(
     state.x = 0;
     state.y = 0;
 
-    CanvasSnapshot(rt.canvas, state);
+    let canvas;
+
+    if ('renderTarget' in rt) {
+        canvas = rt.canvas;
+    } else {
+        canvas = rt.texture.canvas;
+    }
+
+    CanvasSnapshot(canvas, state);
 
     state.callback = null;
 
