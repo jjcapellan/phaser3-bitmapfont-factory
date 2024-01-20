@@ -54,14 +54,14 @@ class Load extends Phaser.Scene {
         if (this.loadedWF) {
             glyphs += chars2.length;
             fonts++;
-            bmff.make('webfont', 'Shadows Into Light', chars, { fontSize: '42px', color: '#555568' }, true);
+            bmff.make('webfont', 'Shadows Into Light', chars, { fontSize: '42px', color: '#555568' });
         }
 
-        bmff.make('sansserif', bmff.defaultFonts.sansSerif, chars, { fontSize: '42px', color: '#555568' }, true);
-        bmff.make('serif', bmff.defaultFonts.serif, chars, { fontSize: '42px', color: '#555568' }, true);
-        bmff.make('monospace', bmff.defaultFonts.monospace, chars, { fontSize: '42px', color: '#555568' });
-        bmff.make('kerning', 'Arial', chars2, { fontSize: '42px', color: '#555568' }, true);
-        bmff.make('nokerning', 'Arial', chars2, { fontSize: '42px', color: '#555568' });
+        bmff.make('sansserif', bmff.defaultFonts.sansSerif, chars, { fontSize: '42px', color: '#555568' });
+        bmff.make('serif', bmff.defaultFonts.serif, chars, { fontSize: '42px', color: '#555568' });
+        bmff.make('monospace', bmff.defaultFonts.monospace, chars, { fontSize: '42px', color: '#555568' }, false);
+        bmff.make('kerning', 'Arial', chars2, { fontSize: '42px', color: '#555568' });
+        bmff.make('nokerning', 'Arial', chars2, { fontSize: '42px', color: '#555568' }, false);
         bmff.exec();
     }
 }
