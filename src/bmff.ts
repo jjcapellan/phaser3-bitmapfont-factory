@@ -155,6 +155,9 @@ export default class BMFFactory {
                 rowY += rowHeight;
                 rowHeight = glyph.xmlHeight + this.#padding;
             }
+            // Position for fillText()
+            glyph.printX = glyph.xmlX + glyph.actualBoundingBoxLeft;
+            glyph.printY = glyph.xmlY + glyph.actualBoundingBoxAscent;
         });
 
         // Sets definitive values for texture size
