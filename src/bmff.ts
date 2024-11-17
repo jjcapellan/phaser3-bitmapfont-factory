@@ -308,8 +308,8 @@ export default class BMFFactory {
                 task.glyphs.push(glyph);
 
                 // Used to calc texture size
-                this.#totalHeight += glyph.xmlHeight;
-                this.#totalWidth += glyph.xmlWidth;
+                this.#totalHeight += glyph.xmlHeight + this.#padding;
+                this.#totalWidth += glyph.xmlWidth + this.#padding;
             }
 
             if (this.onProgress) {
