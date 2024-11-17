@@ -28,11 +28,12 @@ type Glyph = {
 
 type Task = {
     chars: string,
+    font: string,
     fontFamily: string,
     getKernings: boolean,
     glyphs: Glyph[],
     kernings: Kerning[],
-    key: string,
+    key: string,    
     style: Phaser.Types.GameObjects.Text.TextStyle
 }
 
