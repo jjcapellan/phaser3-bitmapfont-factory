@@ -12,7 +12,7 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         const count = task.chars.length;
         const fontFamily = task.fontFamily;
         const size = task.style.fontSize.replace('px', '');
-        const bounds = task.glyphsBounds;
+        const glyphs = task.glyphs;
 
 
 
@@ -28,10 +28,10 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         //// CHARS BLOCK
         let xmlBody: string = '';
         for (let j = 0; j < count; j++) {
-            const id = chars[j].charCodeAt(0);
-            const b = bounds[j];
-            const str = `<char id="${id}" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"` +
-                ` xoffset="0" yoffset="0" xadvance="${b.w}"/>`;
+            const glyph = glyphs[j];
+            const id = glyph.letter.charCodeAt(0);
+            const str = `<char id="${id}" x="${glyph.xmlX}" y="${glyph.xmlY}" width="${glyph.xmlWidth}" height="${glyph.xmlHeight}"` +
+                ` xoffset="${glyph.xmlXoffset}" yoffset="${glyph.xmlYoffset}" xadvance="${glyph.xmlXadvance}"/>`;
 
             xmlBody += str;
         } // end for
