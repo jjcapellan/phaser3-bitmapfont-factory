@@ -274,14 +274,13 @@ export default class BMFFactory {
 
     #makeGlyphs = async () => {
         const tasks = this.#tasks;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
             const chars = task.chars;
             const count = chars.length;
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-
             this.#totalGlyphs += count;
 
             for (let j = 0; j < count; j++) {
