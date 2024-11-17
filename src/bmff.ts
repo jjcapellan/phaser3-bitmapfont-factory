@@ -249,14 +249,15 @@ export default class BMFFactory {
     #getTextureWidth = (totalGlyphs: number, totalHeight: number, totalWidth: number): number => {
         const avgHeight = totalHeight / totalGlyphs;
         const avgWidth = totalWidth / totalGlyphs;
-        const surface = avgWidth * avgHeight * totalGlyphs; // px^2
+        const avg = Math.max(avgHeight, avgWidth);
+        const surface = avg * avg * totalGlyphs; // px^2
         let textureWidth = Math.ceil(Math.sqrt(surface));
 
         if (this.PoT) {
             textureWidth = Phaser.Math.Pow2.GetNext(textureWidth);
         }
 
-        return textureWidth;
+        return textureWidth + 2 * this.#padding;
     }
 
     #getValidFont = (fonts: string[]): string => {
