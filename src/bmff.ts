@@ -21,6 +21,7 @@ export default class BMFFactory {
     #currentTexture: Phaser.Textures.Texture = null;
     #currentXMLs: Document[] = [];
     #onComplete: () => void = () => { };
+    #padding: number = 1;
     #tasks: Task[] = [];
     #textureWidth: number = 0;
     #textureHeight: number = 0;
