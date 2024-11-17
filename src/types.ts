@@ -31,7 +31,7 @@ type Task = {
     glyphs: Glyph[],
     kernings: Kerning[],
     key: string,
-    style: Phaser.GameObjects.TextStyle
+    style: Phaser.Types.GameObjects.Text.TextStyle
 }
 
 export { Options, Task }
