@@ -109,8 +109,14 @@ export default class BMFFactory {
             _fontFamily = this.#getValidFont(fontFamily);
         }
 
+        let _font = '';
+        _font += style.fontStyle?`${style.fontStyle} `: '';
+        _font += `${style.fontSize} `;
+        _font += `"${fontFamily}"`
+
         const task: Task = {
             chars: chars,
+            font: _font,
             fontFamily: _fontFamily,
             glyphs: [],
             getKernings: getKernings,
@@ -282,6 +288,7 @@ export default class BMFFactory {
             const chars = task.chars;
             const count = chars.length;
             this.#totalGlyphs += count;
+            ctx.font = task.font;
 
             for (let j = 0; j < count; j++) {
                 const char = chars[j];
