@@ -11,6 +11,8 @@ type Options = {
 }
 
 type Glyph = {
+    actualBoundingBoxAscent: number,
+    actualBoundingBoxLeft: number,
     id: number,
     letter: string,
     printX: number,

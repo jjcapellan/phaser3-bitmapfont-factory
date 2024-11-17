@@ -284,6 +284,8 @@ export default class BMFFactory {
             for (let j = 0; j < count; j++) {
                 const char = chars[j];
                 const glyph: Glyph = {
+                    actualBoundingBoxAscent: 0,
+                    actualBoundingBoxLeft: 0,
                     id: char.charCodeAt(0),
                     letter: char,
                     printX: 0,
@@ -303,6 +305,10 @@ export default class BMFFactory {
                 glyph.xmlWidth = metrics.actualBoundingBoxRight + metrics.actualBoundingBoxLeft;
                 glyph.xmlHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
                 glyph.xmlXadvance = metrics.width;
+
+                // Used later to calc print positions
+                glyph.actualBoundingBoxAscent = metrics.actualBoundingBoxAscent;
+                glyph.actualBoundingBoxLeft = metrics.actualBoundingBoxLeft;
 
                 task.glyphs.push(glyph);
 
