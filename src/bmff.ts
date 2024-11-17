@@ -1,7 +1,7 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXMLs } from './makexml';
-import { Options, Task } from './types';
+import { Glyph, Options, Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
 export default class BMFFactory {
@@ -112,7 +112,6 @@ export default class BMFFactory {
             chars: chars,
             fontFamily: _fontFamily,
             glyphs: [],
-            glyphsBounds: [],
             getKernings: getKernings,
             kernings: [],
             key: key,
@@ -277,15 +276,39 @@ export default class BMFFactory {
             const chars = task.chars;
             const count = chars.length;
 
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
             this.#totalGlyphs += count;
 
             for (let j = 0; j < count; j++) {
                 const char = chars[j];
-                let glyp = this.scene.make.text({ text: char, style: task.style }, false);
-                task.glyphs.push(glyp);
+                const glyph: Glyph = {
+                    id: char.charCodeAt(0),
+                    letter: char,
+                    printX: 0,
+                    printY: 0,
+                    xmlX: 0,
+                    xmlY: 0,
+                    xmlXoffset: 0,
+                    xmlYoffset: 0,
+                    xmlHeight: 0,
+                    xmlWidth: 0,
+                    xmlXadvance: 0
+                }
+
+                const metrics = ctx.measureText(char);
+                glyph.xmlXoffset = -metrics.actualBoundingBoxLeft;
+                glyph.xmlYoffset = metrics.actualBoundingBoxDescent;
+                glyph.xmlWidth = metrics.actualBoundingBoxRight + metrics.actualBoundingBoxLeft;
+                glyph.xmlHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
+                glyph.xmlXadvance = metrics.width;
+
+                task.glyphs.push(glyph);
+
                 // Used to calc texture size
-                this.#totalHeight += glyp.height;
-                this.#totalWidth += glyp.width;
+                this.#totalHeight += glyph.xmlHeight;
+                this.#totalWidth += glyph.xmlWidth;
             }
 
             if (this.onProgress) {
@@ -296,7 +319,6 @@ export default class BMFFactory {
                     t.scene.events.once('preupdate', resolve);
                 });
             }
-
         }
     }
 
