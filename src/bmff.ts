@@ -128,39 +128,37 @@ export default class BMFFactory {
         const tasks = this.#tasks;
         let textureWidth = 0;
         let textureHeight = 0;
-        let rowHeight = 0;
-        let rowWidth = 0;
-        let x = 0;
-        let y = 0;
+        let rowY = this.#padding;
+        let rowX = this.#padding;
 
         textureWidth = this.#getTextureWidth(this.#totalGlyphs, this.#totalHeight, this.#totalWidth);
 
+        // Joins all glyphs in same array for convenience
+        const glyphs: Glyph[] = [];
         for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            const glyphs = task.glyphs;
-            const gBounds = task.glyphsBounds;
-            let glyphHeight = glyphs[0].height;
+            glyphs.push(...tasks[i].glyphs);
+        }
 
-            if (glyphHeight > rowHeight) {
-                rowHeight = glyphHeight;
+        // Sets positions of glyphs in 2d space
+        glyphs.sort((a, b) => b.xmlHeight - a.xmlHeight);
+        let last = glyphs[0];
+        let rowHeight = last.xmlHeight + this.#padding;
+        glyphs.forEach(glyph => {
+            glyph.xmlX = rowX;
+            glyph.xmlY = rowY;
+            rowX = glyph.xmlX + glyph.xmlWidth + this.#padding;
+            if (rowX > textureWidth) {
+                glyph.xmlX = this.#padding;
+                glyph.xmlY = rowHeight + rowY;
+                last = glyph;
+                rowX = glyph.xmlX + glyph.xmlWidth + this.#padding;
+                rowY += rowHeight;
+                rowHeight = glyph.xmlHeight + this.#padding;
             }
+        });
 
-            for (let j = 0; j < glyphs.length; j++) {
-                let glyph = glyphs[j];
-                rowWidth += glyph.width;
-
-                if (rowWidth > textureWidth) {
-                    rowWidth = glyph.width;
-                    y += rowHeight;
-                    rowHeight = glyphHeight;
-                    x = 0;
-                }
-
-                gBounds[j] = { x: x, y: y, w: glyph.width, h: glyph.height };
-                textureHeight = y + glyph.height;
-                x += glyph.width;
-            } // end for
-        }// end for
+        // Sets definitive values for texture size
+        textureHeight = last.xmlY + last.xmlHeight + this.#padding;
 
         if (this.PoT) {
             textureHeight = Phaser.Math.Pow2.GetNext(textureHeight);
