@@ -34,4 +34,4 @@ type Task = {
     style: Phaser.Types.GameObjects.Text.TextStyle
 }
 
-export { Options, Task }
+export { Glyph, Options, Task }
