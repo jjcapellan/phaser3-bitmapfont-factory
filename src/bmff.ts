@@ -55,7 +55,14 @@ export default class BMFFactory {
      * @returns True if font is available
      */
     check(fontFamily: string): boolean {
-        return document.fonts.check('12px ' + fontFamily);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.font = "12px default";
+        const m1 = ctx.measureText("0");
+        ctx.font = '12px ' + fontFamily;
+        const m2 = ctx.measureText("0");
+        
+        return (m1.actualBoundingBoxAscent != m2.actualBoundingBoxAscent && m1.actualBoundingBoxRight != m2.actualBoundingBoxRight);//document.fonts.check('12px ' + fontFamily);
     }
 
     /**
