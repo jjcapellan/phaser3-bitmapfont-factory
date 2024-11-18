@@ -17,6 +17,7 @@ export default class BMFFactory {
         monospace: monospace
     }
 
+    #ctx: CanvasRenderingContext2D;
     #currentPendingSteps: number = 0;
     #currentTexture: Phaser.Textures.Texture = null;
     #currentXMLs: Document[] = [];
@@ -46,7 +47,7 @@ export default class BMFFactory {
         this.PoT = options.PoT;
         this.onProgress = options.onProgress;
         this.#onComplete = onComplete;
-
+        this.#ctx = document.createElement('canvas').getContext('2d');
     }
 
     /**
@@ -55,13 +56,12 @@ export default class BMFFactory {
      * @returns True if font is available
      */
     check(fontFamily: string): boolean {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = this.#ctx;
         ctx.font = "12px default";
         const m1 = ctx.measureText("0");
         ctx.font = '12px ' + fontFamily;
         const m2 = ctx.measureText("0");
-        
+
         return (m1.actualBoundingBoxAscent != m2.actualBoundingBoxAscent && m1.actualBoundingBoxRight != m2.actualBoundingBoxRight);//document.fonts.check('12px ' + fontFamily);
     }
 
@@ -186,8 +186,7 @@ export default class BMFFactory {
 
     #calcKernings = async () => {
         const tasks = this.#tasks;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = this.#ctx;
 
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
@@ -232,7 +231,7 @@ export default class BMFFactory {
         const frame = this.scene.textures.getFrame(textureKey);
 
         for (let i = 0; i < xmls.length; i++) {
-            const xml = xmls[i];            
+            const xml = xmls[i];
             const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
             this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
@@ -282,8 +281,7 @@ export default class BMFFactory {
 
     #makeGlyphs = async () => {
         const tasks = this.#tasks;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = this.#ctx;
 
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
