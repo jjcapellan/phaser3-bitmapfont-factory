@@ -33,13 +33,13 @@ Try demo here: https://jjcapellan.github.io/phaser3-bitmapfont-factory/
 ## Installation
 ### Browser
 There are two alternatives:
-* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.1/dist/bmff.umd.js) to your project folder and add a reference in your html:
+* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.0.0/dist/bmff.umd.js) to your project folder and add a reference in your html:
 ```html
 <script src = "bmff.umd.js"></script>
 ```  
 * Point a script tag to the CDN link:
 ```html
-<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@1.1.1/dist/bmff.umd.js"></script>
+<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.0.0/dist/bmff.umd.js"></script>
 ```  
 **Important**: the class is exposed as **BMFFactory**
 ### From NPM
@@ -70,6 +70,7 @@ There are three steps:
 
 let bmff = new BMFFactory(this, () => {
             // your code here. 
+            // this code is executed when bitmapfonts are ready
             // i.e.: this.scene.start('nextScene');
         });
 ```
@@ -79,7 +80,7 @@ Parameters:
 * *onComplete* {Function}: callback function executed when all tasks are completed.
 * *options* {Object}: optional object to set some features.
 * *options.PoT* {Boolean}: The size of generated texture will be power of two?. Default: false.
-* *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). This option will be necessary if you want to draw something on the screen during the generation process, since it uses the Phaser rendering context. Each call to this function stops the generation for 1 frame.Default: undefined.
+* *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). Each call to this function stops the generation for 1 frame.Default: undefined.
 
 ### 2. Define the *tasks*
 ```javascript
@@ -108,7 +109,7 @@ Parameters:
 * *fontFamily* {String}: The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or an array of names (first valid font will be selected). Any font loaded in Phaser via WebFont can be used[^1].
 * *chars* {String}: String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must include the space character (" ") if you are going to use it.
 * *style* {Object}: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). FontName and FontFamily properties of this object are ignored.
-* *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. By default is true.
+* *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. Not using kerning could save 40% of the generation time. By default is true.
 
 ### 3. Execute the tasks
 ```javascript
