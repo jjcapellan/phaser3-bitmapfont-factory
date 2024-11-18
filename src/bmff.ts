@@ -112,7 +112,7 @@ export default class BMFFactory {
         let _font = '';
         _font += style.fontStyle ? `${style.fontStyle} ` : '';
         _font += `${style.fontSize} `;
-        _font += `"${fontFamily}"`
+        _font += `"${_fontFamily}"`;
 
         const task: Task = {
             chars: chars,
