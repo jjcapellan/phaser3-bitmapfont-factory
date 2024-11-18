@@ -30,7 +30,7 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         let xmlBody: string = '';
         for (let j = 0; j < count; j++) {
             const glyph = glyphs[j];
-            const id = glyph.letter.charCodeAt(0);
+            const id = glyph.id;
             const offsetY = glyph.printY - glyph.xmlY;
             const str = `<char id="${id}" x="${glyph.xmlX}" y="${glyph.xmlY}" width="${glyph.xmlWidth}" height="${glyph.xmlHeight}"` +
                 ` xoffset="${glyph.xmlXoffset}" yoffset="${lineHeight - offsetY}" xadvance="${glyph.xmlXadvance}"/>`;
