@@ -264,7 +264,7 @@ export default class BMFFactory {
         let textureWidth = Math.ceil(Math.sqrt(surface));
 
         if (this.PoT) {
-            textureWidth = Phaser.Math.Pow2.GetNext(textureWidth);
+            return textureWidth = Phaser.Math.Pow2.GetNext(textureWidth);
         }
 
         return textureWidth + 2 * this.#padding;
