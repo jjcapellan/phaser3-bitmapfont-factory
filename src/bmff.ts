@@ -207,7 +207,7 @@ export default class BMFFactory {
                 const w1 = glyphs[chars.indexOf(pair[0])].xmlWidth + glyphs[chars.indexOf(pair[1])].xmlWidth;
                 const metricsPair = ctx.measureText(pairs[j]);
                 const w2 = metricsPair.actualBoundingBoxRight + metricsPair.actualBoundingBoxLeft;
-                const offset = w2 - w1;
+                const offset = Math.ceil(w2 - w1);
                 if (offset != 0) {
                     kernings.push({ first: pairs[j].charCodeAt(0), second: pairs[j].charCodeAt(1), amount: offset });
                 }
