@@ -28,11 +28,12 @@ async function makeTexture(scene: Phaser.Scene, tasks: Task[], width: number, he
                     const image = document.createElement('img');
                     const url = URL.createObjectURL(blob);
                     image.onload = () => {
+                        scene.textures.addImage(key, image);
+                        let texture = scene.textures.get(key);
                         URL.revokeObjectURL(url);
+                        resolve(texture);
                     };
                     image.src = url;
-                    scene.textures.addImage(key, image);
-                    resolve(scene.textures.get(key));
                 },
                 'image/png'
             );
