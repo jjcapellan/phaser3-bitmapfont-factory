@@ -221,12 +221,11 @@ export default class BMFFactory {
         const texture = this.#currentTexture;
         const xmls = this.#currentXMLs;
         const textureKey = this.#tasks[0].key;
+        const frame = this.scene.textures.getFrame(textureKey);
 
         for (let i = 0; i < xmls.length; i++) {
-            const xml = xmls[i];
-            const frame = this.scene.textures.getFrame(textureKey);
-            const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
-
+            const xml = xmls[i];            
+            const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture); console.log(frame.cutX, frame.cutY, frame.width, frame.height);
             this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
