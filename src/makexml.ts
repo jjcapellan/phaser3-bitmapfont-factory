@@ -13,6 +13,7 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         const fontFamily = task.fontFamily;
         const size = task.style.fontSize.replace('px', '');
         const glyphs = task.glyphs;
+        const lineHeight = Number.parseInt(size);
 
 
 
@@ -30,8 +31,9 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         for (let j = 0; j < count; j++) {
             const glyph = glyphs[j];
             const id = glyph.letter.charCodeAt(0);
+            const offsetY = glyph.printY - glyph.xmlY;
             const str = `<char id="${id}" x="${glyph.xmlX}" y="${glyph.xmlY}" width="${glyph.xmlWidth}" height="${glyph.xmlHeight}"` +
-                ` xoffset="${glyph.xmlXoffset}" yoffset="${glyph.xmlYoffset}" xadvance="${glyph.xmlXadvance}"/>`;
+                ` xoffset="${glyph.xmlXoffset}" yoffset="${lineHeight - offsetY}" xadvance="${glyph.xmlXadvance}"/>`;
 
             xmlBody += str;
         } // end for
