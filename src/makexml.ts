@@ -3,7 +3,7 @@ import { Task } from "./types";
 const makeXMLs = (tasks: Task[]): Document[] => {
 
     let xmls: Document[] = [];
-
+    
 
     for (let i = 0; i < tasks.length; i++) {
         const task = tasks[i];
@@ -36,12 +36,12 @@ const makeXMLs = (tasks: Task[]): Document[] => {
                 ` xoffset="${glyph.xmlXoffset}" yoffset="${lineHeight - offsetY}" xadvance="${glyph.xmlXadvance}"/>`;
 
             xmlBody += str;
-        } // end for
+        }
         xmlBody += '</chars>';
 
 
 
-        //// KERNINGS CLOCK
+        //// KERNINGS BLOCK
         let xmlKernings = '';
         if (task.getKernings) {
             const kcount = task.kernings.length;
