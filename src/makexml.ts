@@ -11,7 +11,7 @@ const makeXMLs = (tasks: Task[]): Document[] => {
         const chars = task.chars;
         const count = task.chars.length;
         const fontFamily = task.fontFamily;
-        const size = task.style.fontSize.replace('px', '');
+        const size = (task.style.fontSize as string).replace('px', '');
         const glyphs = task.glyphs;
         const lineHeight = Number.parseInt(size);
 
