@@ -11,10 +11,11 @@ Try demo here: https://jjcapellan.github.io/phaser3-bitmapfont-factory/
 * Calcs kernings for 97 commonly used pairs. (optional).[^2]
 * Supports list of fallback fonts.
 * Predefined fallback font lists for sans-serif, sans, and monospace types.
+* Support for Phaser v3.50.0+.
 
 [^1]: Fonts with ligatures are not supported.  
 
-[^2]: In Phaser 3.55.2/WebGL kernings are not used by bitmapText objects. This was fixed in new Phaser v3.60.  
+[^2]: In Phaser 3.55.2/WebGL kernings are not used by bitmapText objects. This was fixed in Phaser v3.60.  
 
 ---
 ## Table of contents  
@@ -56,7 +57,7 @@ const bmff = new BMFFactory(this, onComplete);
 ```
 * ES6 module:
 ```javascript
-import BMFFactory from 'phaser3-bitmapfont-factory/dist/bmff.ems';
+import BMFFactory from 'phaser3-bitmapfont-factory';
 
 // In scene.create function
 const bmff = new BMFFactory(this, onComplete);
@@ -80,7 +81,7 @@ Parameters:
 * *onComplete* {Function}: callback function executed when all tasks are completed.
 * *options* {Object}: optional object to set some features.
 * *options.PoT* {Boolean}: The size of generated texture will be power of two?. Default: false.
-* *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). Each call to this function stops the generation for 1 frame.Default: undefined.
+* *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). Each call to this function stops the generation for 1 frame. Default: undefined.
 
 ### 2. Define the *tasks*
 ```javascript
@@ -108,7 +109,7 @@ Parameters:
 * *key* {String}: The key used to retrieve the created bitmapFont (i.e.: <code>this.add.bitmapText(x, y, key, 'text')</code>).
 * *fontFamily* {String}: The name of any font already loaded in the browser (e.g., "Arial", "Verdana", ...), or an array of names (first valid font will be selected). Any font loaded in Phaser via WebFont can be used[^1].
 * *chars* {String}: String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must include the space character (" ") if you are going to use it.
-* *style* {Object}: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). FontName and FontFamily properties of this object are ignored.
+* *style* {Object}: The text style configuration object (the same as the one used in Phaser.GameObjects.Text). Only *fontSize*, *color* and *fontStyle* properties are used. *fontSize* only supports size in pixels.
 * *getKernings* {Boolean}(optional): You are going to use the kernings?. The kernings are calculated for 97 common pairs (i.e.: 'Wa', 'y.', ...). Monospace fonts doesn't need kernings. Not using kerning could save 40% of the generation time. By default is true.
 
 ### 3. Execute the tasks
@@ -127,48 +128,57 @@ This example shows the generation and use of one bitmapfont in the same scene.
 Sometimes we need to generate several bitmapfonts with many glyphs. For these cases is better generate the bitmapfonts previously in a load scene (look the demo folder of this repository).  
 
 ```javascript
-import Phaser from 'phaser'
-import BMFFactory from 'phaser3-bitmapfont-factory/dist/bmff.ems'
+import Bmff from "phaser3-bitmapfont-factory";
 
-class MyGame extends Phaser.Scene {
-    constructor(){
-        super();
+class Game extends Phaser.Scene {
+    constructor() {
+        super("game");
     }
 
-    create(){
-        this.fontReady = false;
-        this.counterBMF = null;
-        this.count = 0;
+    create() {
+        const bmff = new Bmff(this,
+            () => {
+                // Now bitmapfonts are ready
+                this.add.bitmapText(320, 180 - 3 * 42, 'fallback', 'my defined fallback font')
+                    .setOrigin(0.5);
+                this.add.bitmapText(320, 180 - 42, 'defserif', 'default serif font')
+                    .setOrigin(0.5);
+                let b = this.add.bitmapText(320, 180 + 42, 'defmono', 'default monospace font')
+                    .setOrigin(0.5);console.log(b);
+            });
 
-        const options = { onProgress: (progress) => { console.log(progress) }; }
+        const chars = " abcdefghijklmnopqrstuvwxyz";
 
-        // Creates a new BMFFactory object
-        const bmff = BMFFactory(this, 
-        ()=> {
-            // Generated bitmapfont 'countFont' is now in cache ready to be used
-            this.counterBMF = this.add.bitmapText(400,300,'countFont','0', 120)
-                .setOrigin(0.5);
-            this.fontReady = true;
-        },
-        // Optional parameter. Contains the callback onProgress (really wouldn't be necessary for so few glyphs). 
-        options);
+        const config1 = { fontSize: '42px', color: '#1a1c2c'};
+        const config2 = { fontSize: '42px', color: '#1a1c2c', fontStyle: 'italic' };
+        const config3 = { fontSize: '42px', color: '#1a1c2c', fontStyle: 'bold' };        
 
-        // Adds a task to make a bitmapfont using the firs available monospace in the browser and 
-        // generating only glyphs for numbers. In this case, we don't need kernings. The generated
-        // bitmapfont will be saved in bitmapfonts cache as "countFont".
-        bmff.make('countFont', bmff.defaultFonts.monospace, '0123456789', {fontSize: '120px'}, false);
+        bmff.make('defmono', bmff.defaultFonts.monospace, chars, config1, false);
+        
+        bmff.make('defserif', bmff.defaultFonts.serif, chars, config2);
 
-        // Executes the previously defined tasks. When finished, it calls the callback.
+        bmff.make('fallback', ['fdgsfd', 'Arial'], chars, config3);        
+
         bmff.exec();
     }
-
-    update(){
-        if(fontReady){
-            this.count++;
-            this.counterBMF.setText(this.count);
-        }
-    }
 }
+
+function runGame() {
+    let config = {
+        type: Phaser.AUTO,
+        width: 640,
+        height: 360,
+        parent: "game",
+        backgroundColor: '#cdcdcd',
+        scene: [Game],
+    };
+
+    new Phaser.Game(config);
+}
+
+window.onload = function () {
+    runGame();
+};
 ```
   
   
