@@ -1,6 +1,6 @@
 # v2.0.0
-The main change in this version is the discontinuation of the Phaser renderer for creating the bitmapFont texture.  
-This change has caused the position and size of *BitmapText* to differ slightly from previous versions. While no breaking changes have occurred, I have decided to increment the major version.
+This version makes the bitmapFont texture without using Phaser.  
+This change has caused the position and size of *BitmapText* to differ slightly from previous versions. So, while no breaking changes have occurred, I have decided to increment the major version.
 
 ## New improvements:
 * **Reduced size of the generated texture**: Previously, the offsets for each glyph were not calculated, which caused whitespace to be included within the glyph's frame. Now, offsets are calculated based on the metrics, ensuring frames are the same size as the glyphs.
@@ -9,7 +9,7 @@ This change has caused the position and size of *BitmapText* to differ slightly 
 
 ## Fixes:
 * **Incorrect font verification**: Due to changes in the *FontFaceSet* API across various browsers for privacy reasons, it is no longer possible to use the *check()* method of this API to verify font availability. The verification now uses a method based on comparing metrics between the browser's default font and the desired font.
-* **Rendering artifacts**: This issue arose in Phaser v3.85.2+. The Phaser graphics engine was removed from the texture creation process to address this problem. Previously, adding a 1px padding was attempted without success.
+* **Rendering artifacts**: This issue arose in Phaser v3.85.2+. The solution was change the way bitmapfont texture is created. Previously, adding a 1px padding was attempted without success.
 
 ---
 ---
