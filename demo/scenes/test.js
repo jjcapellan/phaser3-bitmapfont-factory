@@ -10,7 +10,7 @@ class Test extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(400, 15, 'Bitmapfonts used below were generated at runtime with BMFFactory v2.0.0', { color: '#555568' })
+        this.add.text(400, 15, 'Bitmapfonts used below were generated at runtime with BMFFactory v2.1.0', { color: '#555568' })
             .setOrigin(0.5);
         const bmfTexture = this.textures.exists('webfont') ?
             this.textures.get('webfont').source[0] : this.textures.get('sansserif').source[0];

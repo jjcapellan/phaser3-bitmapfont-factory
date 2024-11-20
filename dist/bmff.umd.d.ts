@@ -1,3 +1,4 @@
+/// <reference types="./phaser" />
 import { Options } from './types';
 export default class BMFFactory {
     #private;
@@ -17,8 +18,7 @@ export default class BMFFactory {
      * @param [options]
      * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false.
      * @param [options.onProgress] Callback function executed two times per font. Receives a number between
-     * 0 and 1 (total progress). This option will be necessary if you want to draw something on the screen
-     * during the generation process, since it uses the Phaser rendering context.
+     * 0 and 1 (total progress).
      */
     constructor(scene: Phaser.Scene, onComplete: () => void, options?: Options);
     /**
@@ -42,8 +42,8 @@ export default class BMFFactory {
      * @param chars String containing the characters to use (e.g., " abcABC123/*%,."). Important: You must
      * include the space character (" ") if you are going to use it.
      * @param style The text style configuration object (the same as the one used in Phaser.GameObjects.Text).
-     * FontName and FontFamily properties of this object are ignored.
+     * Only *fontSize*, *color* and *fontStyle* properties are used.
      * @param [getKernings = true] You are going to use the kernings?. Not using kernings reduces the generation time.
      */
-    make(key: string, fontFamily: string | string[], chars: string, style?: Phaser.Types.GameObjects.Text.TextStyle, getKernings?: boolean): void;
+    make(key: string, fontFamily: string | string[], chars: string, style: Phaser.Types.GameObjects.Text.TextStyle, getKernings?: boolean): void;
 }

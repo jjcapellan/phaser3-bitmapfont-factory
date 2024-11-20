@@ -1,3 +1,11 @@
+# v2.1.0
+This version only includes optimization changes.
+## New improvements:
+* **Performance improvement**: The drawing of glyphs in the texture has been optimized by activating the *willReadFrequently* option in the creation of the graphic context.
+
+---
+---
+
 # v2.0.0
 This version makes the bitmapFont texture without using Phaser.  
 This change has caused the position and size of *BitmapText* to differ slightly from previous versions. So, while no breaking changes have occurred, I have decided to increment the major version.
