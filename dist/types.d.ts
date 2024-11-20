@@ -1,13 +1,14 @@
-declare type Kerning = {
+/// <reference types="./phaser" />
+type Kerning = {
     first: number;
     second: number;
     amount: number;
 };
-declare type Options = {
+type Options = {
     PoT: boolean;
     onProgress?: (progress: number) => void;
 };
-declare type Glyph = {
+type Glyph = {
     actualBoundingBoxAscent: number;
     actualBoundingBoxLeft: number;
     id: number;
@@ -22,7 +23,7 @@ declare type Glyph = {
     xmlHeight: number;
     xmlXadvance: number;
 };
-declare type Task = {
+type Task = {
     chars: string;
     font: string;
     fontFamily: string;
