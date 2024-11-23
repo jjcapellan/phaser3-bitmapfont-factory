@@ -205,7 +205,7 @@ export default class BMFFactory {
 
             for (let j = 0; j < pairs.length; j++) {
 
-                const pair = pairs[j].split('');
+                const pair = pairs[j];
                 const p1 = glyphs[chars.indexOf(pair[0])];
                 const p2 = glyphs[chars.indexOf(pair[1])];
                 const w1 = p1.xmlWidth + p2.xmlWidth;
