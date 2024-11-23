@@ -251,7 +251,7 @@ export default class BMFFactory {
     #getKerningPairs = (task: Task): string[] => {
         const pairs = [];
         for (let i = 0; i < kerningPairs.length; i++) {
-            const pair = kerningPairs[i].split('');
+            const pair = kerningPairs[i];
             if (task.chars.indexOf(pair[0]) != -1 && task.chars.indexOf(pair[1]) != -1) {
                 pairs.push(kerningPairs[i]);
             }
