@@ -1,3 +1,6 @@
+# v2.1.1
+This version introduces minor performance improvements.
+
 # v2.1.0
 This version only includes optimization changes.
 ## New improvements:
