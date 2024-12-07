@@ -1,3 +1,15 @@
+# v2.2.0
+This version can reduce font generation time by up to 90% thanks to the implementation of a cache system.
+## New improvements:
+* **Cache**: By default, the calculations generated in the first run (kerning, bounds, metrics, ...) are stored in the localStorage for reuse in subsequent runs. The cache can be disabled using the new *disableCache* (default = false) option. If the browser has access restrictions to the localStorage, the cache is automatically disabled.
+```javascript
+const bmff1 = new BMFFactory(this);                               // cache is enabledi
+const bmff2 = new BMFFactory(this, null, { disableCache: true }); // cache is disabled
+```
+
+---
+---  
+
 # v2.1.1
 This version introduces minor performance improvements.
 

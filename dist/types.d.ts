@@ -5,6 +5,7 @@ type Kerning = {
     amount: number;
 };
 type Options = {
+    disableCache: boolean;
     PoT: boolean;
     onProgress?: (progress: number) => void;
 };
@@ -33,4 +34,9 @@ type Task = {
     key: string;
     style: Phaser.Types.GameObjects.Text.TextStyle;
 };
-export { Glyph, Options, Task };
+type Cache = {
+    tasks: Task[];
+    textureW: number;
+    textureH: number;
+};
+export { Cache, Glyph, Options, Task };

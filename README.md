@@ -10,6 +10,7 @@ Try demo here: https://jjcapellan.github.io/phaser3-bitmapfont-factory/
 * Ensures power of two texture size (optional).
 * Calcs kernings for 97 commonly used pairs. (optional).[^2]
 * Supports list of fallback fonts.
+* Cache system reduces font generation time by up to 90%.
 * Predefined fallback font lists for sans-serif, sans, and monospace types.
 * Support for Phaser v3.50.0+.
 
@@ -34,13 +35,13 @@ Try demo here: https://jjcapellan.github.io/phaser3-bitmapfont-factory/
 ## Installation
 ### Browser
 There are two alternatives:
-* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.1.1/dist/bmff.umd.js) to your project folder and add a reference in your html:
+* Download the file [bmff.umd.js](https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.2.0/dist/bmff.umd.js) to your project folder and add a reference in your html:
 ```html
 <script src = "bmff.umd.js"></script>
 ```  
 * Point a script tag to the CDN link:
 ```html
-<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.1.1/dist/bmff.umd.js"></script>
+<script src = "https://cdn.jsdelivr.net/gh/jjcapellan/phaser3-bitmapfont-factory@2.2.0/dist/bmff.umd.js"></script>
 ```  
 **Important**: the class is exposed as **BMFFactory**
 ### From NPM
@@ -81,6 +82,7 @@ Parameters:
 * *onComplete* {Function}: callback function executed when all tasks are completed.
 * *options* {Object}: optional object to set some features.
 * *options.PoT* {Boolean}: The size of generated texture will be power of two?. Default: false.
+* *options.disableCache* {Boolean}: Disables the cache. By default, the calculations generated in the first run are stored in the localStorage for reuse in subsequent runs. Default: false.
 * *options.onProgress* {Function}: callback function executed two times per font. Receives a number between 0 and 1 (total progress). Each call to this function stops the generation for 1 frame. Default: undefined.
 
 ### 2. Define the *tasks*
