@@ -9,6 +9,7 @@ export default class BMFFactory {
     onProgress: (n: number) => void;
     PoT: boolean = false;
     scene: Phaser.Scene;
+    disableCache: boolean = false;
 
     // Common and browser default fonts grouped in arrays by type, to use with make() method.
     defaultFonts = {
@@ -41,12 +42,15 @@ export default class BMFFactory {
      * @param onComplete Function that will be called when all tasks are completed.
      * @param [options]
      * @param [options.PoT = false] The size of generated texture will be power of two?. Default: false. 
+     * @param [options.disableCache = false] Disables the cache when true. By default, the calculations 
+     * generated in the first run are stored in the localStorage for reuse in subsequent runs.
      * @param [options.onProgress] Callback function executed two times per font. Receives a number between 
      * 0 and 1 (total progress).
      */
-    constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false }) {
+    constructor(scene: Phaser.Scene, onComplete: () => void, options: Options = { PoT: false, disableCache: false }) {
         this.scene = scene;
         this.PoT = options.PoT;
+        this.disableCache = options.disableCache;
         this.onProgress = options.onProgress;
         this.#onComplete = onComplete;
         this.#ctx = document.createElement('canvas').getContext('2d');
@@ -78,20 +82,22 @@ export default class BMFFactory {
         this.#totalHeight = 0;
         this.#totalWidth = 0;
 
-        // Cache. Handles posible localStorage SecurityError.
-        const tasksHash = this.#hash(JSON.stringify(this.#tasks));
-        try {
-            const data = localStorage.getItem(tasksHash);
-            this.#currentHash = tasksHash;
-            if (data) {
-                const cache: Cache = JSON.parse(data);
-                this.#tasks = cache.tasks;
-                this.#textureWidth = cache.textureW;
-                this.#textureHeight = cache.textureH;
-                this.#isOnCache = true;
+        if (!this.disableCache) {
+            // Cache. Handles posible localStorage SecurityError.
+            const tasksHash = this.#hash(JSON.stringify(this.#tasks));
+            try {
+                const data = localStorage.getItem(tasksHash);
+                this.#currentHash = tasksHash;
+                if (data) {
+                    const cache: Cache = JSON.parse(data);
+                    this.#tasks = cache.tasks;
+                    this.#textureWidth = cache.textureW;
+                    this.#textureHeight = cache.textureH;
+                    this.#isOnCache = true;
+                }
+            } catch {
+                this.#isStorageAllowed = false;
             }
-        } catch {
-            this.#isStorageAllowed = false;
         }
 
         if (this.#textureWidth == 0) {
@@ -262,7 +268,7 @@ export default class BMFFactory {
             this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
-        if (!this.#isOnCache && this.#isStorageAllowed) {
+        if (!this.#isOnCache && this.#isStorageAllowed && !this.disableCache) {
             const cache: Cache = {
                 tasks: this.#tasks,
                 textureW: this.#textureWidth,

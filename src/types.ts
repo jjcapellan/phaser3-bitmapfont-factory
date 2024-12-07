@@ -5,6 +5,7 @@ type Kerning = {
 }
 
 type Options = {
+    disableCache: boolean,
     // The size of the generated texture will be power of two?
     PoT: boolean,
     onProgress?: (progress: number) => void
