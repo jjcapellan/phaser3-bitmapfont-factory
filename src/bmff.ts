@@ -24,7 +24,6 @@ export default class BMFFactory {
     #currentXMLs: Document[] = [];
     #currentHash: string;
     #isOnCache: boolean = false;
-    #isStorageAllowed: boolean = true;
     #onComplete: () => void = () => { };
     #padding: number = 1;
     #tasks: Task[] = [];
@@ -96,7 +95,7 @@ export default class BMFFactory {
                     this.#isOnCache = true;
                 }
             } catch {
-                this.#isStorageAllowed = false;
+                this.disableCache = true;
             }
         }
 
@@ -268,7 +267,7 @@ export default class BMFFactory {
             this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
 
-        if (!this.#isOnCache && this.#isStorageAllowed && !this.disableCache) {
+        if (!this.#isOnCache && !this.disableCache) {
             const cache: Cache = {
                 tasks: this.#tasks,
                 textureW: this.#textureWidth,
