@@ -1,7 +1,7 @@
 import { kerningPairs, serif, sansSerif, monospace } from './constants.js';
 import { makeTexture } from './maketexture.js';
 import { makeXMLs } from './makexml';
-import { Glyph, Options, Task } from './types';
+import { Cache, Glyph, Options, Task } from './types';
 import ParseXMLBitmapFont from '../node_modules/phaser/src/gameobjects/bitmaptext/ParseXMLBitmapFont.js';
 
 export default class BMFFactory {
@@ -21,6 +21,9 @@ export default class BMFFactory {
     #currentPendingSteps: number = 0;
     #currentTexture: Phaser.Textures.Texture = null;
     #currentXMLs: Document[] = [];
+    #currentHash: string;
+    #isOnCache: boolean = false;
+    #isStorageAllowed: boolean = true;
     #onComplete: () => void = () => { };
     #padding: number = 1;
     #tasks: Task[] = [];
@@ -75,14 +78,32 @@ export default class BMFFactory {
         this.#totalHeight = 0;
         this.#totalWidth = 0;
 
-        // Make glyphs
-        await this.#makeGlyphs();
+        // Cache. Handles posible localStorage SecurityError.
+        const tasksHash = this.#hash(JSON.stringify(this.#tasks));
+        try {
+            const data = localStorage.getItem(tasksHash);
+            this.#currentHash = tasksHash;
+            if (data) {
+                const cache: Cache = JSON.parse(data);
+                this.#tasks = cache.tasks;
+                this.#textureWidth = cache.textureW;
+                this.#textureHeight = cache.textureH;
+                this.#isOnCache = true;
+            }
+        } catch {
+            this.#isStorageAllowed = false;
+        }
 
-        // Set texture dimensions
-        this.#calcBounds();
+        if (this.#textureWidth == 0) {
+            // Make glyphs
+            await this.#makeGlyphs();
 
-        // Calc kernings
-        await this.#calcKernings();
+            // Set texture dimensions
+            this.#calcBounds();
+
+            // Calc kernings
+            await this.#calcKernings();
+        }
 
         this.#currentPendingSteps = 2;
         this.#makeTexture(); // async
@@ -240,6 +261,16 @@ export default class BMFFactory {
             const fontData = ParseXMLBitmapFont(xml, frame, 0, 0, texture);
             this.scene.cache.bitmapFont.add(this.#tasks[i].key, { data: fontData, texture: textureKey, frame: null });
         }
+
+        if (!this.#isOnCache && this.#isStorageAllowed) {
+            const cache: Cache = {
+                tasks: this.#tasks,
+                textureW: this.#textureWidth,
+                textureH: this.#textureHeight
+            }
+            localStorage.setItem(this.#currentHash, JSON.stringify(cache));
+        }
+
 
         this.#currentTexture = null;
         this.#currentXMLs = [];

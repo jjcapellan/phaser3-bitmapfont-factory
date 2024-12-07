@@ -33,8 +33,14 @@ type Task = {
     getKernings: boolean,
     glyphs: Glyph[],
     kernings: Kerning[],
-    key: string,    
+    key: string,
     style: Phaser.Types.GameObjects.Text.TextStyle
 }
 
-export { Glyph, Options, Task }
+type Cache = {
+    tasks: Task[],
+    textureW: number,
+    textureH: number
+}
+
+export { Cache, Glyph, Options, Task }
