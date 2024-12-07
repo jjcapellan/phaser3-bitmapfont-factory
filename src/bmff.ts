@@ -284,6 +284,16 @@ export default class BMFFactory {
         return font;
     }
 
+    // https://en.wikipedia.org/wiki/Fowler-Noll-Vo_hash_function
+    #hash = (str: string): string => {
+        let hash = 0x811c9dc5; // Offset basis
+        for (let i = 0; i < str.length; i++) {
+            hash ^= str.charCodeAt(i);
+            hash = (hash * 0x01000193) >>> 0; // FNV prime
+        }
+        return hash.toString();
+    }
+
     #makeGlyphs = async () => {
         const tasks = this.#tasks;
         const ctx = this.#ctx;
