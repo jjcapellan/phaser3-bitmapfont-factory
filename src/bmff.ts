@@ -93,6 +93,11 @@ export default class BMFFactory {
                     this.#textureWidth = cache.textureW;
                     this.#textureHeight = cache.textureH;
                     this.#isOnCache = true;
+                    
+                    this.#totalProgress = 1;
+                    if (this.onProgress) {
+                        this.onProgress(1);
+                    }
                 }
             } catch {
                 this.disableCache = true;
