@@ -34,6 +34,6 @@
   "devDependencies": {
     "cpy-cli": "^4.1.0",
     "microbundle": "^0.14.2",
-    "phaser": "^3.87.0"
+    "phaser": "^3.88.2"
   }
 }

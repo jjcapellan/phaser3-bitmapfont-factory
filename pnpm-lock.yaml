@@ -3,12 +3,12 @@ lockfileVersion: 5.4
 specifiers:
   cpy-cli: ^4.1.0
   microbundle: ^0.14.2
-  phaser: ^3.87.0
+  phaser: '3'
 
 devDependencies:
   cpy-cli: 4.2.0
   microbundle: 0.14.2
-  phaser: 3.87.0
+  phaser: 3.88.2
 
 packages:
 
@@ -3103,8 +3103,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /phaser/3.87.0:
-    resolution: {integrity: sha512-AyI1b3T5fp05gzf6WUmu2FNqaZL+Y7w88yBRLf7YZXF9bncUSHpnDrupnTGoPqy/RKHRLBcay7zWeqQ2wiMWcw==}
+  /phaser/3.88.2:
+    resolution: {integrity: sha512-UBgd2sAFuRJbF2xKaQ5jpMWB8oETncChLnymLGHcrnT53vaqiGrQWbUKUDBawKLm24sghjKo4Bf+/xfv8espZQ==}
     dependencies:
       eventemitter3: 5.0.1
     dev: true
